@@ -1,0 +1,77 @@
+/* here you can put your own css to customize and override the theme */
+
+div.rom_item{
+    float:left;
+    width:170px;
+    margin:5px 8px;
+}
+div.rom_item a{
+    height:96px;
+    width:170px;
+    margin:10px;
+}
+div.rom_item div{
+    font-size:11px;
+    text-align:left;
+    width:90%;
+    overflow:hidden;
+    margin:0px 5%;
+}
+div.rom_item div.rom_title{
+    color:#036;
+    height:28px;
+}
+div.rom_item div.rom_body{
+    color:#333;
+    height:42px;
+    margin-top:6px;
+}
+
+
+
+span.pagination2{
+}
+span.pagination2 a{
+    margin:0 3px;
+}
+
+div.my-page-title{
+    padding:4px;
+    background-color:#666;
+    border-color:#999;
+    padding-left:16px;
+    height:32px;
+    margin:-16px 0px 12px 0px;
+}
+div.my-page-title > span.title{
+    font-size:16px;
+    color:#fff;
+}
+
+div.col-1-9{
+    width:11.11111111111%;
+    padding-right:10px;
+    padding-left:10px;
+}
+div.col-2-9{
+    width:22.22222222222%;
+    padding-right:10px;
+    padding-left:10px;
+}
+
+.input-xs {
+    height: 25px;
+    padding: 2px 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+select.input-xs {
+    height: 25px;
+    line-height: 25px;
+}
+
+textarea.input-xs {
+    height: auto;
+}

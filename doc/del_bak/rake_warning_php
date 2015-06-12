@@ -1,0 +1,20 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Warning_controller extends CI_Controller{
+
+    function __construct()
+    {
+        parent::__construct();
+        $this->load->library(array('curl','email'));
+        $this->load->helper(array('date','project'));
+        $this->load->model(array('esg','station','warning','cmail','data','project','command'));
+        log_message('error','warning start >>>>');        
+    }
+
+    function __destruct() {
+        log_message('error','warning stop <<<<<');        
+    }
+
+
+}
+

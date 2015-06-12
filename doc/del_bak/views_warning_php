@@ -1,0 +1,95 @@
+<style type="text/css">
+    .city_list{float:left;width:250px;}
+    .warning_list{padding-left:30px;overflow:hidden;}
+    
+    .city_list a{cursor:pointer;}
+    .city_warnings{float:left;width:100%;background-color:#eee;margin:0 0 10px 5px;border-right:2px solid;}
+    .city_warnings ul li{list-style:none;line-height:30px;height:30px;float:right;text-align:center;}
+    .city_warnings ul li{width:15%;}
+    .city_warnings ul li.active{background-color:#333;}
+    .city_warnings ul li.inactive{background-color:#ccc;}
+    .city_warnings ul li.active a{font-weight:bold;color:#fff;}
+    .city_warnings li a{color:#333;}
+    
+    .type_warnings{float:left;width:100%;background-color:#eee;margin:0 0 0 5px;}
+    .type_warnings ul li{list-style:none;line-height:30px;height:30px;float:left;}
+</style>
+
+<div class="base_center">
+<div class="row-fluid">
+<div class='es_sub2_menu' style="border-bottom:3px solid #333;width:100%;margin-bottom:5px;">  
+    <ul>
+    <? foreach($cities as $city){?>
+        <li class="<?= $current_city->getId() == $city->getId()?"active":"" ?>"> 
+            <a  href="/frontend/warning/project_warnings/<?=  $city->getId() ?>"> <?= $city->getNameChn()?> </a> 
+
+            <? if( $priority_counts[$city->getId()]['high'] ){ ?>
+                <a href="/frontend/warning/project_warnings/<?= $city->getId()?>?priority=<?= ESC_WARNING_PRIORITY__HIGH?>">
+                    <span class="badge badge-important"><?= $priority_counts[$city->getId()]['high'] ?></span></a>
+            <?}?>
+            <? if( $priority_counts[$city->getId()]['middle'] ){ ?>
+                <a href="/frontend/warning/project_warnings/<?= $city->getId()?>?priority=<?= ESC_WARNING_PRIORITY__MIDDLE?>">
+                    <span class="badge badge-warning"><?= $priority_counts[$city->getId()]['middle'] ?></span></a>
+            <?}?>
+            <? if( $priority_counts[$city->getId()]['low'] ){ ?>
+                <a href="/frontend/warning/project_warnings/<?= $city->getId()?>?priority=<?= ESC_WARNING_PRIORITY__LOW?>">
+                    <span class="badge"><?= $priority_counts[$city->getId()]['low'] ?></span></a>
+            <?}?>
+        </li>
+        <li class="divider-vertical"></li>
+    <? }?>
+    </ul>
+</div> 
+
+<div style="margin-top:6px;float:left;width:98%;padding-left:1%">  
+
+<div class="city_list">
+
+    <div class="type_warnings">
+        <ul><? foreach($type_counts as $type=>$count) {?>    
+            <li style="width:65%;text-align:left;">
+<font style="color:<?= h_warning_priority_color($this->warning->get_priority($type))?>"> <?= h_warning_type_name_chn($type)?> </font></li>
+            <li style="width:35%;text-align:center;"><a href="/frontend/warning/project_warnings/<?= $current_city->getId()?>?type=<?= $type?>&sort=id-desc"><?= $count?></a></li>
+            <? }?>
+        </ul>
+    </div>
+</div>
+
+<div class="warning_list">
+    <div class="es_sub2_menu" style="background-color:#ccc;margin-bottom:5px;border-bottom:4px solid #ccc;width:100%;float:left;">
+        <ul><li class ="<?= $sort_str == "priority-asc--station_id-asc--id-desc"?"active":"" ?>"><a href="?sort=priority-asc--station_id-asc--id-desc">按告警程度排序</a></li>
+            <li class="divider-vertical"></li>        
+            <li class ="<?= $sort_str == "station_id-asc--priority-asc--id-desc"?"active":"" ?>"><a href="?sort=station_id-asc--priority-asc--id-desc">按基站排序</a></li>
+            <li class="divider-vertical"></li>
+            <li class ="<?= $sort_str == "id-desc"?"active":"" ?>"><a href="?sort=id-desc">按告警时间排序</a></li>
+        </ul>        
+    </div>
+    
+    <div class="warnings_t" style="width:100%;float:left;">
+        <?= $pagination;?>
+        <table class="table table-condensed table-striped" style="font-size:12px;">
+        <thead>
+            <tr><th>基站</th><th>告警类型</th><th>开始时间</th><th>持续时长</th></tr>
+        </thead>
+        <tbody>
+            <? foreach ($warnings as $key => $warning) {?>
+                <tr><td><?= h_online_mark($warning->getStation()->isOnline())?>&nbsp;
+                        <a href="/frontend/single/day/<?= $warning->getStation()->getId()?>?time=<?= $warning->getCreateTime()->format('Y-m-d')?>" style="color:#333">
+                        <?= $warning->getStation()->getNameChn() ?></a></td>
+                    <td>
+                    <a href="/frontend/single/day/<?= $warning->getStation()->getId()?>?time=<?= $warning->getCreateTime()->format('Y-m-d')?>">
+                        <font style="color:<?= h_warning_priority_color($warning->getPriority())?>">
+                            <?= h_warning_type_name_chn($warning->getType())?>
+                        </font></a></td>		
+                    <td><?= $warning->getStartTime()->format('Y-m-d H:i:s'); ?></td>
+                    <td><?= h_dt_last_time($warning->getStartTime(), null) ?></td>
+                </tr>
+            <? }?>                
+        </tbody>
+        </table>   
+        <?= $pagination;?>
+    </div>
+</div>
+</div>
+</div>
+</div>

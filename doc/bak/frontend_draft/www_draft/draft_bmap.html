@@ -1,0 +1,226 @@
+
+<html>
+<head>  
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+	<title>bmap</title>  
+<style type="text/css">  
+	.container{width:1024px; margin: 0 auto; padding: 10px; }
+	#map{width:600px; height:450px; border:1px solid gray; margin: 0 auto;} 
+
+</style>  
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2"></script>  
+</head>
+
+
+<body>
+  <div class="container">
+		<div id="map"></div>  
+	</div>
+		<script type="text/javascript">  
+      // global obj. type1_color, type2_text
+      window.global_options=[ 
+                              {"lng":"120.298","lat":"31.568","type1":"0","type2":"0","warning":["告警条目1","告警条目2","告警条目3"]},
+                              {"lng":"120.299","lat":"31.569","type1":"0","type2":"1"},
+                              {"lng":"120.300","lat":"31.570","type1":"0","type2":"2"},
+                              {"lng":"120.301","lat":"31.571","type1":"0","type2":"3"},
+                              {"lng":"120.299","lat":"31.568","type1":"1","type2":"0"},
+                              {"lng":"120.300","lat":"31.569","type1":"1","type2":"1","warning":["告警条目1","告警条目2"]},
+                              {"lng":"120.301","lat":"31.570","type1":"1","type2":"2"},
+                              {"lng":"120.302","lat":"31.571","type1":"1","type2":"3"},
+                              {"lng":"120.300","lat":"31.568","type1":"2","type2":"0"},
+                              {"lng":"120.301","lat":"31.569","type1":"2","type2":"1"},
+                              {"lng":"120.302","lat":"31.570","type1":"2","type2":"2"},
+                              {"lng":"120.303","lat":"31.571","type1":"2","type2":"3"}
+                            ]
+      // BMap.
+			var map = new BMap.Map("map");          // 创建地图实例  
+			//var point = new BMap.Point(120.299, 31.568);  // 创建点坐标  
+			//map.centerAndZoom(point, 9);                 // 初始化地图，设置中心点坐标和地图级别  
+			//map.centerAndZoom("无锡");
+			/*setTimeout(function(){
+				map.panTo(new BMap.Point(120.299, 31.568));
+			},2000);*/
+			map.enableScrollWheelZoom();  // 开启鼠标滚轮缩放  
+			//map.enableKeyboard();         // 开启键盘控制 
+			//map.enableContinuousZoom();   // 开启连续缩放效果  
+			//map.enableInertialDragging(); // 开启惯性拖拽效果 
+			
+			//map.addControl(new BMap.NavigationControl());   //各种控件
+			//map.addControl(new BMap.ScaleControl());  
+			//map.addControl(new BMap.OverviewMapControl());  
+			//map.addControl(new BMap.MapTypeControl());  
+			//map.addControl(new BMap.CopyrightControl());
+			
+			//var opts = {anchor: BMAP_ANCHOR_TOP_LEFT, offset: new BMap.Size(20,60)}; //控件摆放位置 TOP BOTTOM LEFT RIGHT
+			//map.addControl(new BMap.NavigationControl(opts));
+			
+			//var opts = {type: BMAP_NAVIGATION_CONTROL_SMALL};   //控件外观 LARGE SMALL PAN ZOOM
+			//map.addControl(new BMap.NavigationControl(opts));
+			
+			//var marker = new BMap.Marker(point);  //标注
+			//map.addOverlay(marker);
+			
+			/* 事件 
+			map.addEventListener("click", function(e){   
+				alert(e.point.lng + "," + e.point.lat);	
+			});
+			
+			map.addEventListener("zoomend", function(){   
+				alert("地图缩放至：" + this.getZoom() + "级");	
+			});
+	
+			map.addEventListener("dragend", function(){  
+				var center = map.getCenter();
+				alert("地图中心变更为：" + center.lng + "," +center.lat);	
+			});
+			*/
+      /*
+			var local = new BMap.LocalSearch(map, {
+				renderOptions: {map: map, panel: "results"}
+			});
+			local.search("无锡工商银行");
+     【#results{width: 380px; height: 200px;float:left; border:1px solid gray; margin-left: 10px;} 】
+     【		<div id="results"></div> 】
+      */
+      
+      
+      // 编写自定义函数，创建标注，添加标注点击事件
+      var pointArr=[];
+      var marker_opts = {
+          title: "<h5 style='margin:0 0 2px 0'>基站</h4>"
+        };
+      
+      
+      function addMarker(point, x, y){
+        var myIcon = new BMap.Icon("img/markers.png", new BMap.Size(21, 25), {
+        anchor: new BMap.Size(10, 25),                  // 指定定位位置
+        imageOffset: new BMap.Size(0 - x * 21, 0 - y * 25)   // 设置图片偏移
+      });
+      var marker = new BMap.Marker(point, {icon: myIcon});
+      map.addOverlay(marker);
+      marker.addEventListener("click",function(){
+        var infoContent = "<img style='float:right;margin:4px' src='img/test_infowindow.png' width='21' height='25' />"+
+                          "<p style='margin:0; font-size:14px; color:#606060;'>地理位置：["+point.lng+", "+point.lat+"]</p>";
+        var infoWindow = new BMap.InfoWindow(infoContent,marker_opts);
+        this.openInfoWindow(infoWindow);
+      });
+      }
+      
+      // 编写自定义函数，
+      /*
+      // [1]随机向地图添加10个标注
+      var bounds = map.getBounds();
+      var lngSpan = bounds.toSpan().lng;
+      var latSpan = bounds.toSpan().lat;
+      var sw = bounds.getSouthWest();
+      var ne = bounds.getNorthEast();
+      for (var i = 0; i < 10; i ++) {
+        var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7 + 0.15), sw.lat + latSpan * (Math.random() * 0.7 + 0.15));
+        addMarker(point, i);
+      }
+      */
+      
+      // [2]根据提供的地理区域或坐标获得最佳的地图视野
+      //var pointArr = [new BMap.Point(lng,lat),new BMap.Point(lng,lat)]
+      /*var pointArr = [new BMap.Point(120.299, 31.568),
+                      new BMap.Point(120.300, 31.569),
+                      new BMap.Point(120.301, 31.570),
+                      new BMap.Point(120.302, 31.571)] */
+      
+      for (var i = 0; i < window.global_options.length; i ++) {
+        pointArr[i] = new BMap.Point(window.global_options[i].lng, window.global_options[i].lat);
+        
+        addMarker(pointArr[i], window.global_options[i].type1, window.global_options[i].type2);
+      }
+      
+      map.setViewport(pointArr);
+      
+      
+
+  // 自定义覆盖物的构造函数
+    function ComplexCustomOverlay(point, txtarray){
+      this._point = point;
+      this._text = txtarray.join('<br>');
+      this._line = txtarray.length;
+    }
+     // 继承API的BMap.Overlay();
+    ComplexCustomOverlay.prototype = new BMap.Overlay(); 
+    
+    // 实现初始化方法
+    ComplexCustomOverlay.prototype.initialize = function(map){
+      // 保存map对象实例
+      this._map = map;  
+      // 创建div元素，作为自定义覆盖物的容器  文本高18px
+      var div = this._div = document.createElement("div");
+      div.style.position = "absolute";
+      div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+      div.style.backgroundColor = "#ff0000";
+      div.style.color = "white";
+      div.style.height = (18*this._line) + "px";
+      div.style.padding = "0 4px";
+      div.style.lineHeight = "18px";
+      div.style.whiteSpace = "nowrap";
+      div.style.MozUserSelect = "none";
+      div.style.fontSize = "12px";
+      var span = this._span = document.createElement("span");
+      div.innerHTML = this._text;
+         
+      //var that = this;
+      // 创建arrow
+      var arrow = this._arrow = document.createElement("div");
+      arrow.style.background = "url(img/label.png) 0 -30px no-repeat";
+      arrow.style.position = "absolute";
+      arrow.style.width = "11px";
+      arrow.style.height = "10px";
+      arrow.style.top =  (18*this._line-1) + "px"; // -1 for beautiful!!
+      arrow.style.left = "20px";
+      arrow.style.overflow = "hidden";
+      div.appendChild(arrow);
+     
+      /* 
+      div.onmouseover = function(){
+        this.style.backgroundColor = "#6BADCA";
+        this.style.borderColor = "#0000ff";
+        this.getElementsByTagName("span")[0].innerHTML = that._overText;
+        arrow.style.backgroundPosition = "0px -20px";
+      }
+
+      div.onmouseout = function(){
+        this.style.backgroundColor = "#EE5D5B";
+        this.style.borderColor = "#BC3B3A";
+        this.getElementsByTagName("span")[0].innerHTML = that._text;
+        arrow.style.backgroundPosition = "0px 0px";
+      }
+      */
+      // 将div添加到覆盖物容器中
+      map.getPanes().labelPane.appendChild(div);
+      
+      return div;
+    }
+    // 绘制覆盖物
+    ComplexCustomOverlay.prototype.draw = function(){
+      var map = this._map;
+      var pixel = map.pointToOverlayPixel(this._point);
+      this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+      this._div.style.top  = pixel.y - (10+26+18*this._line) + "px"; // 10为arrow高度，26相对[x,y]高度调整，18为自定义覆盖物div的高度
+    }
+
+    // 添加覆盖物
+    for (var i = 0; i < window.global_options.length; i ++) {
+	   if(window.global_options[i].warning)
+	   {
+		    temp_map_point = new BMap.Point(window.global_options[i].lng,window.global_options[i].lat);
+		    var myCompOverlay = new ComplexCustomOverlay(temp_map_point, window.global_options[i].warning);
+		    map.addOverlay(myCompOverlay);
+	   }
+    }
+
+
+      
+
+
+		</script> 
+
+</body>  
+</html> 

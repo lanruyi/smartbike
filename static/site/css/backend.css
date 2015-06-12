@@ -1,0 +1,13 @@
+.sta_table{width:100%;clear:both;padding: 0; margin: 0 0 18px 0;border-collapse:collapse; border-spacing: 0;font-size:12px}
+.sta_table th{padding: 3px 6px; font-weight:bold;background:#3066a6;color:#FFFFFF;border:1px solid #3066a6; text-align:left;}
+.sta_table .th_1{padding: 3px 6px; font-weight:bold;background:#666699;color:#FFFFFF;border:1px solid #3066a6; text-align:left;}
+.sta_table .th_2{padding: 3px 6px; font-weight:bold;background:#417291;color:#FFFFFF;border:1px solid #3066a6; text-align:left;}
+.sta_table .th_3{padding: 3px 6px; font-weight:bold;background:#067201;color:#FFFFFF;border:1px solid #3066a6; text-align:left;}
+.sta_table .th_4{padding: 3px 6px; font-weight:bold;background:#666666;color:#FFFFFF;border:1px solid #CCCCCC; text-align:left;}
+.sta_table .th_5{padding: 3px 6px; font-weight:bold;background:#333333;color:#FFFFFF;border:1px solid #CCCCCC; text-align:left;}
+.sta_table .th_6{padding: 3px 6px; font-weight:bold;background:#FF6600;color:#FFFFFF;border:1px solid #FF6600; text-align:left;}
+.sta_table tr{padding: 0; background:#F7F7F7;}
+.sta_table td{padding: 3px 6px; border:1px solid #CCCCCC; height:14px;line-height:14px;overflow:hidden}
+.sta_table td:nth-child(2n+1){background-color:#ddd}
+
+

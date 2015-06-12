@@ -1,0 +1,42 @@
+数据上传接口
+
+    URL：     http://semos-cloud.com:8988/io/app/insert
+    METHOD:   POST
+    PARAM:    app_id
+              type   
+                 default: "unknown"
+              content
+              
+    RETURN:   {"status":"no_login"}
+              {"status":"success"}
+              {"status":"no_content"}
+              {"status":"no_type"}
+
+获取heads接口
+
+    URL:      http://semos-cloud.com:8988/io/app/getHeads
+    METHOD:   GET
+    PARAM:    
+
+获取body接口
+
+    URL:      http://semos-cloud.com:8988/io/app/getBody/[name]
+    METHOD:   GET
+    PARAM:    [name] =  [head.type]_v[head.version]
+                 example:  exploration_v1.0
+
+登录接口
+
+    URL:      http://semos-cloud.com:8988/io/app/login
+    METHOD:   POST
+    PARAM:    app_id
+              user
+              md5pass (md5) 
+              
+    RETURN:   {"status":"no_app_id"}
+              {"status":"login_fail"}
+              {"status":"success","user_id":17,"name_chn":"xx"}
+
+
+
+

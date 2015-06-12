@@ -1,0 +1,11 @@
+haha
+
+update energies set num=2738 and create_time=20120602130500 where id=234595;
+
+update energies set num=num+175555 where num<10000;
+
+delete from temprature where station_id = 16 and create_time>20120603230000 and num = 0;
+
+delete from temperatures where station_id = 16 and create_time>20120603230000 and num = 0;
+
+delete from switchons where station_id = 16 and create_time>20120603230000 and num = 0;

@@ -1,0 +1,237 @@
+﻿
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<title>air-borne chart - OSS能管云 前端</title>
+
+	<meta name="robots" content="no-cache" />
+	<meta name="description" content="Energy Saving" />
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/static/bootstrap/patch/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/static/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+    
+    <script type="text/javascript" src="/static/jquery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.sparkline.min.js"></script>
+    
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// $('.xf_sparkline1').sparkline('html', { enableTagOptions: true });
+			// $('.xf_sparkline1').sparkline('html', {type:'bar', barColor: 'green'});
+			//$.fn.sparkline.defaults.bar.barcolor = 'green';
+			
+			bullet_values=[14,7,16];
+			pie_values=[4,4,2];
+			$('.xf_sparkline1').sparkline(bullet_values,{type:'bullet'});
+			$('.xf_sparkline2').sparkline(pie_values,{type:'pie'});
+			$('.kt_sparkline1').sparkline(bullet_values,{type:'bullet'});
+			$('.kt_sparkline2').sparkline(pie_values,{type:'pie'});
+		});
+    </script>
+  </head>
+
+
+        <link type="text/css" href="/static/jquery/smoothness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/static/jquery/jquery-ui-1.8.18.custom.min.js"></script>
+		<script type="text/javascript" src="/static/jquery/ex/jquery-ui-timepicker-addon.js"></script>
+
+        
+
+<body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/site/img/green_cloud.png" style="height:15px;padding:0;margin:0"/> 节能云 </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <!-- <li class="active"><a href="/station"> station </a></li> -->
+              <li><a href="/frontend/frontend_chart"> 图表 </a> </li>
+              <li><a href="/frontend/frontend_map"> 地图 </a> </li>
+              <li><a href="/frontend/frontend_report"> 分析报表 </a> </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<div class="container">
+
+	<div class="page-header">
+		<h1>分析报表 Analytical Statement <small>home</small></h1>
+	</div><!--/page-header-->
+		
+	<div class="row"> 
+        <div class="span2">
+            <div class="nav_model" id="nav_model">
+            	<div class="well" style="padding: 8px 0;">
+		        	<ul class="nav nav-list">
+		          		<li class="active"><a href="/datam"><i class="icon-white icon-home"></i> HOME </a></li>
+		         		<li class="nav-header">站点能耗 </li>
+		           		<li><a href="#"><i class="icon-book"></i> >80A </a></li>
+		         	 	<li><a href="#"><i class="icon-pencil"></i> 40-60A </a></li>
+		         	 	<li><a href="#"><i class="icon-pencil"></i> 20-30A </a></li>
+
+		        	  	<li class="divider"></li>
+		        	  	<li><a href="#"><i class="icon-cog"></i> 设置 </a></li>
+		         	 	<li><a href="#"><i class="icon-flag"></i> 帮助 </a></li>
+					</ul>
+      			</div>
+            </div>
+        </div>
+        <div class="span10">
+            <div class="span10">
+            	<div class="nav_content" id="nav_content">
+            		
+            	<div class="tabbable tabs-top">
+            		<ul class="nav nav-tabs">
+            			<li class="active"><a href="#A" data-toggle="tab">section A</a></li>
+            			<li><a href="#B" data-toggle="tab">section B</a></li>
+            			<li><a href="#C" data-toggle="tab">section C</a></li>
+            		</ul>
+            		<div class="tab-content">
+            			<div class="tab-pane active" id="A">
+							<table class="table table-bordered">
+							  <thead>
+							    <tr>
+							      <th rowspan="2">#站点id</th>
+							      <th colspan="4">新风</th>
+							      <th colspan="4">空调</th>
+							    </tr>
+							    <tr>
+							      <th>No.</th>
+							      <th>工作时间</th>	
+							      <th>曲线</th>
+							      <th>饼图</th>
+							      <th>No.</th>
+							      <th>工作时间</th>
+							      <th>曲线</th>
+							      <th>饼图</th>				    	
+							    </tr>
+							  </thead>
+							  <tbody>
+							    <tr>
+							      <td rowspan="2">1</td>
+							      <td>1</td>
+							      <td>5</td>
+							      <td id="xf_line">
+									<!-- <span class="xf_sparkline1" sparkType="bar" sparkBarColor="green"> 1,3,4,2 </span> -->
+									<!-- <span class="xf_sparkline1" values="1,3,4,2"></span> -->
+									<span class="xf_sparkline1"></span>
+							      </td>
+							      <td id="xf_pie">
+									<span class="xf_sparkline2"></span>
+							      </td>
+							      <td>1</td>
+							      <td>2</td>
+							      <td id="kt_line">
+									<span class="kt_sparkline1"></span>
+								  </td>
+							      <td id="kt_pie">
+							      	<span class="kt_sparkline2"></span>
+							      </td>		
+							      		      
+							    </tr>
+							     <tr>
+							      <td>1</td>
+							      <td>5</td>
+							      <td id="xf_line">
+									<!-- <span class="xf_sparkline1" sparkType="bar" sparkBarColor="green"> 1,3,4,2 </span> -->
+									<!-- <span class="xf_sparkline1" values="1,3,4,2"></span> -->
+									<span class="xf_sparkline1"></span>
+							      </td>
+							      <td id="xf_pie">
+									<span class="xf_sparkline2"></span>
+							      </td>
+							      <td>1</td>
+							      <td>2</td>
+							      <td id="kt_line">
+									<span class="kt_sparkline1"></span>
+								  </td>
+							      <td id="kt_pie">
+							      	<span class="kt_sparkline2"></span>
+							      </td>		
+							      		      
+							    </tr>
+							  </tbody>
+							</table>
+						</div><!--tab-pane A-->
+			          	<div class="tab-pane" id="B">
+			          		<p>I'm in Section B.</p>
+			         	</div>
+			         	<div class="tab-pane" id="C">
+			          		<p>this is Section C.</p>
+			          	</div>
+            		</div><!--tab-content-->
+            	</div><!--tabbable-->
+            		
+            	</div><!--nav_content-->
+            </div><!--span10-->
+        </div><!--span10-->
+
+    </div><!--main row-->
+
+
+
+
+
+Under Construction!
+
+<div class="row footer">
+<div class="span12 footer">
+<hr>
+<footer>
+    <p><strong> &copy; 2011 Designed by Xiang </strong></p>
+</footer>
+</div><!--span12 footer-->
+</div><!--row footer-->
+</div><!--contaner-->
+</body>
+
+
+
+
+    <script src="/static/bootstrap/js/google-code-prettify/prettify.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-alert.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-button.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="/static/bootstrap/js/application.js"></script>
+
+</html>

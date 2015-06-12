@@ -1,0 +1,144 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+	<title>ipad_index</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	 
+	<link rel="stylesheet"  href="css_jqmobile/jquery.mobile-1.1.0.min.css" />  
+	<script src="js_jqmobile/jquery-1.7.1.min.js"></script>
+	<script src="js_jqmobile/jquery.mobile-1.1.0.min.js"></script>
+	<script src="highcharts/highcharts.js"></script>
+	
+	<style>
+		.nav-glyphish-example .ui-btn .ui-btn-inner {
+			padding-top: 40px !important;
+		}
+		.nav-glyphish-example .ui-btn .ui-icon {
+			width: 30px !important;
+			height: 30px !important;
+			margin-left: -15px !important;
+			box-shadow: none !important;
+			-moz-box-shadow: none !important;
+			-webkit-box-shadow: none !important;
+			-webkit-border-radius: 0 !important;
+			border-radius: 0 !important;
+		}
+		#chart .ui-icon {
+			background: url(glyphish-icons/icons/16-line-chart-white.png) 50% 50% no-repeat;
+			background-size: 24px 22px;
+		}
+		#map .ui-icon {
+			background: url(glyphish-icons/icons/07-map-marker-white.png) 50% 50% no-repeat;
+			background-size: 16px 22px;
+		}
+		#report .ui-icon {
+			background: url(glyphish-icons/icons/179-notepad-white.png) 50% 50% no-repeat;
+			background-size: 18px 22px;
+		}
+		.all_charts {
+			margin: 0 auto;
+			background-color: white;
+			height: 900px;
+		}
+
+ 	</style>
+ 
+ 
+ 
+ 
+	
+	</head> 
+	
+	<body>	
+
+	<div data-role="page" id="chart_foo" >	
+		
+		
+				<script type="text/javascript" src="chart_basic.js?id=3"></script>
+	<script type="text/javascript">
+		window.global_options = {
+			"station_id" : "1",
+			"dur" : "3_hours",
+			"type" : "last",
+			"time" : ""
+		}
+		window.base_webservice_url="http://58.215.20.110:8988";
+		// window.base_webservice_url="";
+
+		// $(document).bind("mobileinit", function() {
+			// // Make your jQuery Mobile framework configuration changes here!
+			// $.support.cors = true;
+			// $.mobile.allowCrossDomainPages = true;
+		// })
+
+		$(document).ready(function() {
+
+			draw_emtpy_charts();
+
+			get_data_and_refresh_chart();
+		
+			// setInterval(function(){
+				// get_data_and_refresh_chart();
+			// },1000*10)
+			
+		});
+
+	</script>
+		
+		
+		
+		<div data-role="header" data-position="fixed">
+			<h1>Airborne ESS</h1>
+			<a href="javascript:get_data_and_refresh_chart();void(0);" data-icon="refresh" class="ui-btn-left" data-rel="dialog" data-transition="flip">Refresh</a>	
+			<a href="settime.html" data-icon="gear" class="ui-btn-right" data-rel="dialog" data-transition="flip">Options</a>				
+		</div><!-- /header -->
+		
+
+		
+		<div data-role="content" class="all_charts">
+				<div id="es_temprature"></div>		
+				<div id="es_temprature_test"></div>			
+				<div id="es_temprature_test_2"></div>
+		</div><!-- /content -->
+		
+		
+		
+		<div data-role="footer" class="nav-glyphish-example" data-position="fixed" >
+			<div data-role="navbar" class="nav-glyphish-example" data-grid="b">
+				<ul>
+					<li><a href="#" id="chart" data-icon="custom"  data-transition="none">Chart</a></li>
+					<li><a href="#map_foo" id="map" data-icon="custom" data-transition="none">Map</a></li>
+					<li><a href="#" id="report" data-icon="custom" data-transition="none">Report</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		</div><!-- /footer -->
+	</div><!-- /page -->
+	
+	
+	
+
+<div data-role="page" id="map_foo" >
+		<div data-role="header">
+			<h1>Airborne ESS</h1>
+			<a href="settime.html" data-icon="gear" class="ui-btn-right" >Options</a>				
+		</div><!-- /header -->
+		
+		<div data-role="content" id="all_map">
+			<img src="img/baidu_map.png" />
+		</div><!-- /content -->
+		
+		<div data-role="footer" class="nav-glyphish-example" data-position="fixed">
+			<div data-role="navbar" class="nav-glyphish-example" data-grid="b">
+				<ul>
+					<li><a href="#chart_foo" id="chart" data-icon="custom" data-transition="none">Chart</a></li>
+					<li><a href="#" id="map" data-icon="custom"  data-transition="none">Map</a></li>
+					<li><a href="#" id="report" data-icon="custom" data-transition="none">Report</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		</div><!-- /footer -->
+	</div><!-- /page -->
+
+		
+	</body>
+</html>

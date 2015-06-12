@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>jQuery UI DatatimePicker</title>
+		
+		<link rel="stylesheet" type="text/css" href="../css/jquery-ui-1.8.16.custom.css" />
+		<style type="text/css">
+			body{width: 1024px;margin:10px auto; }
+			.maincontainer { width: 1024px; padding: 5px; border:1px solid #333; float: left;} 
+			.area_select { font: 12px sans-serif; width: 220px; padding: 10px;  border: 2px solid gray; float: left;}
+			.charts { width: 740px;  margin-left: 30px; border: 1px dashed; float: left;}
+			.chart { height: 400px; margin-bottom: 10px; border: 1px solid;}
+			
+			ul { margin: 0; }
+			ul li { list-style: none; }
+			#dtp { margin: 5px; }
+			#time { text-align: center; margin-left: 30px;}
+			.dtp_ok { text-align: right; }
+			
+			/* css for datepicker */
+			#ui-datepicker-div, .ui-datepicker{ font-size: 90%; margin-top: 10px; margin-left: 10px;}
+			
+			/* css for timepicker */
+			.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+			.ui-timepicker-div dl { text-align: left; text-indent: 5px;}
+			.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+			.ui-timepicker-div dl dd { margin: 0 10px 10px 45px; }
+			.ui-timepicker-div td { font-size: 90%; }
+			.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+		
+		</style>
+
+
+		
+	</head>
+	<body>
+	<div class="maincontainer">
+		<div class="area_select">
+			<div class="duration">
+				<b>时段：</b>
+				<ul>
+					<li>
+						<input type="radio" name="dur" id="3_hours" onclick="duration('3_hours')" checked="checked"/> 3时 &nbsp; 
+						<input type="radio" name="dur" id="1_day"   onclick="duration('1_day')"  /> 1天   &nbsp; 
+						<input type="radio" name="dur" id="7_days"  onclick="duration('7_days')"  /> 1周   &nbsp; 
+					</li>
+					<li>
+						<input type="radio" name="dur" id="1_month" onclick="duration('1_month')" /> 1月 &nbsp; 
+						<input type="radio" name="dur" id="3_month" onclick="duration('3_month')" /> 1季 &nbsp; 
+						<input type="radio" name="dur" id="1_year"  onclick="duration('1_year')"  /> 1年   &nbsp; 
+					</li>
+				</ul>		
+			</div>
+				
+			<!-- Datepicker -->
+			<div class="datetime">
+				<b>时间：</b> 
+				<div id="dtp"></div>
+				<input type="text" id="time" value="" disabled="true" />
+			</div>
+			
+			<div class="position">
+				<ul>
+					<li>
+						<input type="radio" name="pst" id="start"  onclick="position('start')" /> 起 &nbsp; 
+						<input type="radio" name="pst" id="end"    onclick="position('end')"  checked="checked" /> 止 &nbsp; 
+						<input type="radio" name="pst" id="around" onclick="position('around')" /> 中 &nbsp; 
+					</li>
+				</ul>		
+			</div>
+			
+			<div class="dtp_ok">
+				<a href="javascript:void(0)" onclick="submitTime()"><b>OK</b></a>
+			</div>
+		</div>
+		
+		<div class="charts">
+			<div class="chart" id="temp_chart">
+			</div>
+			<div class="chart" id="1_chart">
+			</div>
+			<div class="chart" id="2_chart">
+			</div>
+			<div class="chart" id="3_chart">
+			</div>
+			<div class="chart" id="4_chart">
+			</div>
+			<div class="chart" id="5_chart">
+			</div>
+			<div class="chart" id="6_chart">
+			</div>			
+		</div>
+	</div>
+	</body>
+    
+
+		<script type="text/javascript" src="../js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript" src="../js/datetimepicker/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../js/datetimepicker/jquery.ui.datetimepicker-zh-CN.js"></script>
+		<script type="text/javascript">
+
+		// charts obj.
+			var charts;
+			var options = {
+				chart: {
+					renderTo: 'temp_chart',
+					type: 'line',
+					width: 740,
+					height: 400,
+					borderWidth: 2,
+					borderColor: '#EBBA95'
+				},
+				title: {
+					text: 'Chart Temperature'
+				},
+				subtitle: {
+					text: ''
+				},
+				xAxis: {
+					type: 'datetime'
+					//tickInterval: 2 * 3600 * 1000,
+					//maxZoom: 24 * 3600 * 1000
+				},
+				yAxis: {
+					title: {
+						text: 'Temperature (°C)'
+					}
+				},
+				tooltip: {
+					formatter: function() {
+							return '<b>'+ this.series.name +'</b><br/>'+
+							//this.x +': '+ this.y +'°C';
+							Highcharts.dateFormat('%Y-%m-%e %H:%M:%S', this.x)+': '+this.y+'°C';
+					}
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'top',
+					x: -10,
+					y: 100,
+					borderWidth: 0
+				},
+				series: []
+			};		
+		// Json struct for different params. Initial: current_time, last 3_hours
+			window.global_options = {
+				"station_id": "1",
+				"dur": "3_hours",
+				//"dur": "1_day",
+				//"dur": "7_days",
+				//"dur": "1_month",
+				//"dur": "3_month",
+				//"dur": "1_year",
+				"type": "end",
+				"time": "20120408111110"
+			}
+		// duration(), position(), submitTime().
+			function duration(dur){
+				window.global_options.dur = dur;
+			};	
+			function position(pos){
+				window.global_options.type = pos;
+			};
+			function submitTime(){
+				var time = $('#time').val();
+				if(time!="")
+					window.global_options.time = time;
+				getDataList();
+			};
+		// getDataList().
+			function getDataList(){
+				// xAxis.
+				switch(window.global_options.dur){
+					case "3_hours":{
+					options.subtitle.text = "Range: 3 hours";
+					options.xAxis.tickInterval = 900 * 1000;  //(15min_xAxis)(6min_data)
+					options.xAxis.maxZoom = 3.25 * 3600 * 1000;  
+					} break;
+					
+					case "1_day":{
+					options.subtitle.text = "Range: 1 day";
+					options.xAxis.tickInterval = 2 * 3600 * 1000; //(2hr_xAxis)(1hr_data)
+					options.xAxis.maxZoom = 24 * 3600 * 1000;					
+					} break;
+					
+					case "7_days":{
+					options.subtitle.text = "Range: 1 week";
+					options.xAxis.tickInterval = 24 * 3600 * 1000;  //(24hr_xAxis)(6hr_data)
+					options.xAxis.maxZoom = 7*24 * 3600 * 1000;					
+					} break;
+					
+					case "1_month":{
+					options.subtitle.text = "Range: 1 month";
+					//options.xAxis.tickInterval = 10*24 * 3600 * 1000;	//(3d_xAxis)(1d_data)
+					options.xAxis.maxZoom = 30*24 * 3600 * 1000;					
+					} break;
+					
+					case "3_month":{
+					options.subtitle.text = "Range: 1 quarter";
+					options.xAxis.tickInterval = 15*24 * 3600 * 1000;   //(10d_xAxis)(2d_data)
+					options.xAxis.maxZoom = 90*24 * 3600 * 1000;					
+					} break;
+					
+					case "1_year":{
+					options.subtitle.text = "Range: 1 year";   
+					options.xAxis.tickInterval =  60*24 * 3600 * 1000;   //(1mon_xAxis)(7d_data)
+					options.xAxis.maxZoom = 365*24 * 3600 * 1000;					
+					} break;
+					
+					default: {
+					}
+				};	
+			
+				options.series[0] = {name: 'Temp indoor', data:[]};
+				options.series[1] = {name: 'Temp outdoor', data:[]};	
+				
+				$.get("/webservice/getdatalist",  {station_id:window.global_options.station_id,
+				//$.get("temp_indoor.html",  {station_id:window.global_options.station_id,
+											param:"indoor_tmp",
+											dur:window.global_options.dur,
+											type:window.global_options.type,
+											time:window.global_options.time}, function(temp_str){
+					tempObj = jQuery.parseJSON(temp_str);
+					
+					$.each(tempObj, function(i,field){
+						//console.log(field.time);
+						options.series[0].data.push([Date.parse(field.time), parseFloat(field.num)]);
+					});	
+					
+					if(typeof(chartTemp)=="undefined")
+						charts = new Highcharts.Chart(options);
+					else{
+						//chartTemp.redraw();
+						//console.log(options.series[0].data);
+						charts.series[0].setData(options.series[0].data);
+					}
+				});
+				
+				$.get("/webservice/getdatalist",  {station_id:window.global_options.station_id,
+				//$.get("temp_outdoor.html",  {station_id:window.global_options.station_id,
+											param:"outdoor_tmp",
+											dur:window.global_options.dur,
+											type:window.global_options.type,
+											time:window.global_options.time}, function(temp_str){
+					tempObj = jQuery.parseJSON(temp_str);
+	
+					$.each(tempObj, function(i,field){
+						//console.log(field.time);
+						options.series[1].data.push([Date.parse(field.time), parseFloat(field.num)]);
+					});	
+					
+					if(typeof(chartTemp)=="undefined")
+						charts = new Highcharts.Chart(options);
+					else{
+						//chartTemp.redraw();
+						//console.log(options.series[0].data);
+						charts.series[1].setData(options.series[1].data);
+					}
+				});
+					
+			};
+			
+		$(document).ready(function(){
+			// Datetimepicker
+			$('#dtp').datepicker({
+				showSecond: true,
+				onSelect: function(datetimeText, instance){
+					$('#time').val(datetimeText);
+				}
+			});
+			
+			      		if(typeof(chartTemp)=="undefined")
+						charts = new Highcharts.Chart(options);
+					else{
+						//chartTemp.redraw();
+						//console.log(options.series[0].data);
+						charts.series[1].setData(options.series[1].data);
+					}
+			getDataList();	
+		});
+
+		</script>
+        
+<script src="../highcharts/highcharts.js"></script>
+<script src="../highcharts/modules/exporting.js"></script>
+</html>
+
+

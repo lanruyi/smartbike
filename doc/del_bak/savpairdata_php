@@ -1,0 +1,77 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+
+class SavPairData extends ES_Model {
+
+    public function __construct() {
+        $this->table_name = "savpairdatas";
+    }
+    
+    public function delSomeSavpairdatas($pair_id,$time){
+            $month_end = h_dt_stop_time_of_month($time);
+            $this->db->query("delete from savpairdatas where savpair_id=? and datetime between ? and ?",
+            array($pair_id,$time,$month_end));
+    }
+    
+    public function paramFormat($_params){
+        $_params['datetime']         = isset($_params['datetime'])        ? $_params['datetime']        : 0;
+        $_params['savpair_id']       = isset($_params['savpair_id'])      ? $_params['savpair_id']      : 0;
+        $_params['sav_station_cspt'] = isset($_params['sav_station_cspt'])? $_params['sav_station_cspt']: null;
+        $_params['std_station_cspt'] = isset($_params['std_station_cspt'])? $_params['std_station_cspt']: null;
+        $_params['rate']             = isset($_params['rate'])            ? $_params['rate']            : null;
+        $_params['saving_func']      = isset($_params['saving_func'])     ? $_params['saving_func']     : 0;
+        $_params['error']            = isset($_params['error'])           ? $_params['error']           : null;
+        $_params['warning']          = isset($_params['warning'])         ? $_params['warning']         : null;
+        return $_params;     
+    }
+
+    
+    public function initSavPairDatas($time_str, $saving_func_array) {
+        $begin_datetime = h_dt_start_time_of_month($time_str);
+        $end_datetime = h_dt_stop_time_of_month($time_str);
+        $savpairs = $this->savpair->getSavPairsbyTime($begin_datetime);
+        
+        foreach ($savpairs as $savpair) {
+            if ($this->isInitSavPairData($savpair['id'],$begin_datetime)) {
+                continue;
+            }
+            $savpairdata_array = array();
+            foreach ($saving_func_array as $saving_func) {
+                //初始化每月的savpairdata
+                $savpairdata = array();
+                $savpairdata['savpair_id'] = $savpair['id'];
+                $savpairdata['time_type'] = ESC_MONTH;
+                $savpairdata['saving_func'] = $saving_func;
+                $savpairdata['datetime'] = $savpair['datetime'];
+                array_push($savpairdata_array, $savpairdata);
+                //初始化每天的savpairdata
+                $savpairdata['time_type'] = ESC_DAY;
+                $tmp = $begin_datetime;
+                while (h_dt_compare($end_datetime, $tmp)) {
+                    $savpairdata['datetime'] = $tmp;
+                    array_push($savpairdata_array, $savpairdata);
+                    $tmp = h_dt_add_day($tmp, 1);
+                }
+            }
+            $this->insert_array($savpairdata_array);
+        }
+        
+    }
+    
+        
+    public function isInitSavPairData($savpair_id,$datetime){
+        $month_end = h_dt_stop_time_of_month($datetime);
+        $query = $this->db->query("select count(*) n from savpairdatas where `savpair_id`= ? and datetime between ? and ?",
+                array($savpair_id,$datetime,$month_end));
+        $res = $query->row_array();
+        if($res['n']){
+            return true;
+        }
+        return false;
+    }
+}
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+

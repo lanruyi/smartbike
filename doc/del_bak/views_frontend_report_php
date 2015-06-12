@@ -1,0 +1,76 @@
+    <style>
+        .fe_filter{float:left;width:100%;height:30px;background-color:#ccc;padding-top:2px;}
+        .fe_filter ul li{float:left;margin:0 15px 0 0;list-style:none;height:28px;border:0px solid;}
+        .fe_filter select{border:0;}
+
+        #table-fixed{float:left;width:25%;}
+        #table-scrolled{float:left;width:75%;overflow-x:scroll;}
+        #table-fixed table,#table-scrolled table{width:100%;}
+        #table-fixed table tr,#table-scrolled table tr{height:25px;}
+        #table-fixed table th,#table-scrolled table th{background-color:#cfdced;}
+        #table-fixed table td{background-color:#e4ecf7;}
+        #table-scrolled th,#table-scrolled td{width:60px;}
+    </style>
+
+<div style="clear:both;"></div>
+<div class="base_center">
+    <form class="fe_filter" method="get" action="/frontend/report/index">
+        <ul>
+<!--            <li>城市 <?= h_station_relative_select('city_id', $cities, $this->input->get('city_id')); ?></li>-->
+            <li>负载 <?= h_station_total_load_select($this->input->get('total_load')); ?></li>
+            <li>建筑 <?= h_station_building_select($this->input->get('building')); ?></li>
+            <li id="es_month">月份 <input type="text" style="width:60px;" name="time_str" value="<?= $time_str ?>"></li>
+            <li>每页显示<input class="input-mini" name="per_page" value="<?= $this->input->get('per_page') ?>" type="text" />行</li>
+            <li style="float:right;"><a href="/frontend/report/index" class="btn">清除查询</a></li>
+            <li style="float:right;"><button type="submit" class="btn">确定查询</button></li>
+        </ul>
+    </form>
+
+    <div id="table-fixed">
+    <table border="1" style="border-right-width:0;">
+        <tr><th>基站名</th><th>月AC节能</th></tr>
+        <tr><th>本页基站合计</th><th><?= $mtotal?></th></tr>
+        <?php foreach($stations as $key=>$station){
+            if(!$key or ($key && ($group_by[$key] != $group_by[$key-1]))){
+                echo "<tr><td colspan=2  style='background-color:white;'>".
+                        h_station_total_load_name_chn($station->getTotalLoad())." ".h_station_building_name_chn($station->getBuilding())."</td></tr>";
+            }
+        ?>
+        <tr>
+            <td><?= $station->getNameChn()?></td>
+            <td style="text-align:right;"><?= ($station->getStationType() == ESC_STATION_TYPE_STANDARD)?"":$stotal[$station->getId()]['energy_save']?></td>
+        </tr>
+        <? }?>
+    </table>
+    </div>
+    <div id="table-scrolled">
+    <table border="1" style="table-layout:fixed;border-left-width:0;">
+        <tr><?php for($i=0;$i<date('t',h_dt_date_str_timestamp($time_str));$i++){
+                echo "<th style='text-align:center;'>".($i+1)."日</th>";
+        }?></tr>
+        <tr><?php foreach($dtotal as $item){
+                echo "<th>".$item."</th>";
+        }?></tr>
+        <?php foreach($stations as $key=>$station){ 
+     
+            if(!$key or ($key && ($group_by[$key] != $group_by[$key-1]))){
+                echo "<tr><td colspan='".date('t', h_dt_date_str_timestamp($time_str))."' style='background-color:white;'></td></tr>";
+            }
+            if ($station->getStationType() == ESC_STATION_TYPE_SAVING ||
+                                $station->getStationType() == ESC_STATION_TYPE_NPLUSONE ||
+                                $station->getStationType() == ESC_STATION_TYPE_COMMON) {
+                foreach ($slist[$station->getId()] as $item) {
+                    echo "<td style='text-align:right;'>" . round($item['energy_save'],2) . "</td>";
+                }
+                for ($i = date('t', h_dt_date_str_timestamp($time_str)) - count($slist[$station->getId()]); $i > 0; $i--) {
+                    echo "<td></td>";
+                }
+                echo "</tr>";
+            }else if($station->getStationType() == ESC_STATION_TYPE_STANDARD) {
+                     echo "<tr><td colspan='" . date('t', h_dt_date_str_timestamp($time_str)) . "'></td></tr>";
+            }
+        }?>
+    </table>
+    </div>
+    <div><span style="color:gray;"><?= $filter_num_str?></span><span style="float:right;"><?= $pagination;?></span></div> 
+</div>

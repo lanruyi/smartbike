@@ -1,0 +1,62 @@
+<?
+/********************************
+Fast JJump 
+../../../../static/site/js/frontend_month.js
+
+********************************/
+?>
+
+
+        <div class="base_center">  
+                 <div class="es_subnav">
+                     <ul>
+                         <li><? if($station->getStationType() == ESC_STATION_TYPE_NPLUSONE){
+                             echo h_bar_np1_day_string($time_disp,$station);
+                         }else if(isset($std_station)){
+                             echo "基准站:<a href='javascript:go_to_station(".$std_station->getId().")'>".$std_station->getNameChn()."</a>";
+                            }?></li>
+                         <li><b style="color:#fff;"><?= $time_disp?></b></li>
+                     </ul>
+                 </div>
+
+
+<style>
+.realtime_box{ margin-top:8px; float:left;width:100%; border-top:3px solid #333; border-bottom:3px solid #333;}
+.realtime_box ul{ margin:0;padding:0; float:left; width:100%; list-style:none}
+.realtime_box ul li{height:40px; margin:2px; font-size:9px; line-height:18px;float:left; text-align:center;list-style:none; border-right:1px solid #666}
+.realtime_box ul li font{ font-size:20px;}
+.realtime_box ul li div{ font-size:20px;}
+</style>
+          <div class="realtime_box" >
+            <ul>
+                <li style="width:12%"><?=$this->lang->line("Indoor temperature")?><br/><font><?= $station_info['last_indoor_tmp']?>℃</font></li>
+                <li style="width:12%"><?=$this->lang->line("Outdoor temperature")?><br/><font><?= $station_info['last_outdoor_tmp']?>℃</font></li>
+                <li style="width:12%"><?=$this->lang->line("TLKS-BCT temperature")?><br/><font><?= $station_info['last_box_tmp']?>℃</font></li>
+                <li style="width:9%"><?=$this->lang->line("New wind")?><br/><?= h_realtime_box_on_off($station_info['last_fan_0_on']) ?></li>
+                <li style="width:9%"><?=$this->lang->line("Air-condition")?>1 <br/><?= h_realtime_box_on_off($station_info['last_colds_0_on']) ?></li>
+                <li style="width:9%"><?=$this->lang->line("Air-condition")?>2 <br/><?= h_realtime_box_on_off($station_info['last_colds_1_on']) ?></li>
+                <li style="width:19%;"><?=$this->lang->line("Ammeter")?> <br/><font><?= $station_info['last_energy_main_read']?></font> </li>
+            </ul>
+          </div>
+
+
+</div>
+		<script type="text/javascript" src="/static/site/js/frontend_basic.js?id=<?= hsid()?>"></script>
+		<script type="text/javascript">
+		// Json struct for different params. Initial: time, last 3_hours
+			window.global_options = {
+                "station_id": "<?= $station->getId() ?>",
+                "day_offset": "0"
+            }
+
+            $(document).ready(function(){
+
+
+                });
+
+
+		</script>
+        
+
+
+

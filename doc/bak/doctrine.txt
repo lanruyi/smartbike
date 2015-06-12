@@ -1,0 +1,9 @@
+
+
+
+* The order of these steps does matter!
+
+php doctrine-cli.php orm:generate-entities models
+php doctrine-cli.php orm:generate-proxies
+php doctrine-cli.php orm:schema-tool:drop --force    //不要做
+php doctrine-cli.php orm:schema-tool:create          //不要做   

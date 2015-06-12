@@ -1,0 +1,87 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+define('ESC_SYSCONFIG__IN_OPERATION',1);
+define('ESC_SYSCONFIG__UNDER_CONSTRUCTION',2);
+
+define('ESC_CMAILCONFIG__CENCEL_SEND',1);
+define('ESC_CMAILCONFIG__CONTINUE_SEND',2);
+
+class Sysconfig extends ES_Model {
+
+    public function __construct()
+    {
+        $this->load->database();
+        $this->table_name = "sysconfig";
+        $this->entities_str="Entities\Sysconfig";
+    }
+
+
+    public function getandInitConfigs(){
+        $sysconfig = $this->findFirstBy(array());
+        $configs = $sysconfig->getConfigs();
+        $need_save = false;
+        if(!isset($configs['sys_status'])){
+            $configs['sys_status'] = ESC_SYSCONFIG__IN_OPERATION;
+            $need_save = true;
+        }
+        if($need_save){
+            $sysconfig->setConfigs($configs);
+            $this->save($sysconfig);
+        }
+        return $configs;
+    }
+
+    public function getSysStatus(){
+        $key = "sysconfig";
+        $config_mem = $this->cache->get($key);
+        if(!$config_mem){
+            $config_mem = $this->getandInitConfigs();
+            $this->cache->save($key,$config_mem,1440*60);
+        }
+        return $config_mem['sys_status'];
+    }
+
+    public function setSysStatus($sys_status){
+        $key = "sysconfig";
+        $sysconfig = $this->findFirstBy(array());
+        $configs = $sysconfig->getConfigs();
+        $configs['sys_status'] = $sys_status;
+        $sysconfig->setConfigs($configs);
+        $this->save($sysconfig);
+        $this->cache->save($key,$configs,1440*60);
+        return $sysconfig;
+    }
+
+    public function getCmailInitConfigs(){
+        $cmailconfig = $this->findFirstBy(array());
+        $configs = $cmailconfig->getConfigs();
+        if(!isset($configs['cmail_status'])){
+            $configs['cmail_status'] = ESC_CMAILCONFIG__CONTINUE_SEND;
+            $cmailconfig->setConfigs($configs);
+            $this->save($cmailconfig);
+        }
+        return $configs;
+    }
+
+    public function getCmailStatus(){
+        $key = "cmailconfig";
+        $config_mem = $this->cache->get($key);
+        if(!$config_mem){
+            $config_mem = $this->getCmailInitConfigs();
+            $this->cache->save($key,$config_mem,1440*60);
+        }
+        return $config_mem['cmail_status'];
+    }
+
+    public function setCmailStatus($cmail_status){
+        $key = "cmailconfig";
+        $cmailconfig = $this->findFirstBy(array());
+        $configs = $cmailconfig->getConfigs();
+        $configs['cmail_status'] = $cmail_status;
+        $cmailconfig->setConfigs($configs);
+        $this->save($cmailconfig);
+        $this->cache->save($key,$configs,1440*60);
+        return $cmailconfig;
+    }
+
+}

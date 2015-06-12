@@ -1,0 +1,102 @@
+public function statistics($station_id=16){
+    $_station  = $this->station->find($station_id);
+    if(!$_station){echo "no ".$station_id." sta!";return;}
+    $viewdata['title'] = "statistics";
+    $viewdata['station_info'] = $this->get_station_info($_station);
+    
+    if($this->input->get('style')){
+        $_statistic_style = $this->input->get('style');
+    }else{
+        $_statistic_style = 'm';
+    }
+    if($this->input->get('duration')){
+        $_statistic_duration = $this->input->get('duration');
+    }else{
+        $_statistic_duration = '0';
+    }
+    
+    /////debug///////
+    $debug = $this->input->get('debug')?1:0;//for test
+    $results = $this->get_statistics_datas($_station,$_statistic_style,$_statistic_duration,$debug);
+    
+    $viewdata['station'] = $_station;
+    $viewdata['statistic_style'] = $_statistic_style;
+    $viewdata['statistic_duration'] = $_statistic_duration;
+    $viewdata['th'] = $results['th'];
+    $viewdata['datas'] = $results['datas'];
+    $viewdata['total'] = $results['total'];
+    $viewdata['current'] = $results['current'];
+    $viewdata['loops'] = $results['loops'];
+    $viewdata['std_datas'] = $results['std_datas']?$results['std_datas']:null;
+    $viewdata['std_total'] = $results['std_total']?$results['std_total']:null;
+    $viewdata['std_current'] = $results['std_current']?$results['std_current']:null;
+    
+    $this->load->view('templates/frontend_header',$viewdata);
+    $this->load->view('frontend/station/menu');
+    $this->load->view('frontend/station/statistics');
+    $this->load->view('templates/frontend_footer');
+}
+
+private function get_statistics_datas($_station,$_statistic_style,$_statistic_duration,$debug){
+    $viewdata = array();
+    $viewdata['std_datas']=array();
+    $viewdata['std_total']=array();
+    $viewdata['std_current']=array();
+    $statistic_timestr = h_statistic_datepicker($_statistic_style,$_statistic_duration);
+    $ptime = new DateTime($statistic_timestr);
+
+    
+    if($_statistic_style=='d'){
+        $viewdata['th'] = $ptime->format(' ( n月j日 )');
+        $viewdata['datas'] = $this->statistics->findDayStatisticslist($_station,$ptime->format('r'));
+        $viewdata['total'] = $this->statistics->findStatistics($_station,$ptime->format('r'),ESC_STATISTICS_TYPE__DAY);
+        $current = new DateTime();
+        $viewdata['current'] = $this->statistics->findStatistics($_station,$current->format('r'),ESC_STATISTICS_TYPE__HOUR);
+        $viewdata['loops'] = h_statistic_loops($_statistic_style,$statistic_timestr,count($viewdata['datas']));
+        if($debug){var_dump(count($viewdata['datas']),$viewdata['loops'],$viewdata['total']->getMainEnergy(),$viewdata['current']->getMainEnergy(),
+        (floatval($viewdata['total']->getMainEnergy())-floatval($viewdata['current']->getMainEnergy())));}
+        ////////////////////////test////////////////
+        switch($_station->getStationType()){
+            case ESC_STATION_TYPE_SAVING:
+            case ESC_STATION_TYPE_COMMON:
+                $std_station = $this->station->find_single_standard_station($_station);
+                $std_datas = $this->statistics->findDayStatisticslist($std_station,$ptime->format('r'));
+                $std_total = $this->statistics->findStatistics($std_station,$ptime->format('r'),ESC_STATISTICS_TYPE__DAY);
+                $std_current = new DateTime();
+                $std_current = $this->statistics->findStatistics($std_station,$std_current->format('r'),ESC_STATISTICS_TYPE__HOUR);
+                $viewdata['std_datas'] = h_statistic_std_column($std_datas);
+                $viewdata['std_total'] = h_statistic_std_total($std_total);
+                $viewdata['std_current'] = h_statistic_std_current($std_current);
+                break;
+            case ESC_STATION_TYPE_SIXPULSONE:
+                break;
+        }
+    }elseif($_statistic_style=='m'){
+        $viewdata['th'] = $ptime->format(' ( n月 )');
+        $viewdata['datas'] = $this->statistics->findMonthStatisticslist($_station,$ptime->format('r'));
+        $viewdata['total'] = $this->statistics->findStatistics($_station,$ptime->format('r'),ESC_STATISTICS_TYPE__MONTH);
+        $current = new DateTime();
+        $viewdata['current'] = $this->statistics->findStatistics($_station,$current->format('r'),ESC_STATISTICS_TYPE__DAY);
+        $viewdata['loops'] = h_statistic_loops($_statistic_style,$statistic_timestr,count($viewdata['datas']));
+        if($debug){var_dump(count($viewdata['datas']),$viewdata['loops'],($viewdata['total']->getMainEnergy()-$viewdata['current']->getMainEnergy()));}
+        ////////////////////////test////////////////
+        switch($_station->getStationType()){
+            case ESC_STATION_TYPE_SAVING:
+            case ESC_STATION_TYPE_COMMON:
+                $std_station = $this->station->find_single_standard_station($_station);
+                //echo $std_station->getNameChn();
+                $std_datas = $this->statistics->findMonthStatisticslist($std_station,$ptime->format('r'));
+                $std_total = $this->statistics->findStatistics($std_station,$ptime->format('r'),ESC_STATISTICS_TYPE__MONTH);
+                $std_current = new DateTime();
+                $std_current = $this->statistics->findStatistics($std_station,$std_current->format('r'),ESC_STATISTICS_TYPE__DAY);
+                $viewdata['std_datas'] = h_statistic_std_column($std_datas);
+                $viewdata['std_total'] = h_statistic_std_total($std_total);
+                $viewdata['std_current'] = h_statistic_std_current($std_current);
+                break;
+            case ESC_STATION_TYPE_SIXPULSONE:
+                break;
+        }
+    }		
+    return $viewdata;
+}
+

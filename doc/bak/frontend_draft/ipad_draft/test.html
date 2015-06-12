@@ -1,0 +1,39 @@
+
+<!DOCTYPE html> 
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>Date Options</title> 
+	<link rel="stylesheet"  href="css_jqmobile/jquery.mobile-1.1.0.min.css" />  
+	<script src="js_jqmobile/jquery-1.7.1.min.js"></script>
+	<script src="js_jqmobile/jquery.mobile-1.1.0.min.js"></script>
+
+</head> 
+<body> 
+
+<div data-role="dialog">
+	
+		<div data-role="header" data-theme="b">
+			<h1>Date Options</h1>
+		</div>
+
+		<div data-role="content" data-theme="c">
+			<div data-role="fieldcontain">
+				<label for="select-choice-custom" class="select">Shipping method:</label>
+				<select name="select-choice-1" id="select-choice-custom" data-native-menu="false">
+					<option value="standard">Standard: 7 day</option>
+					<option value="rush">Rush: 3 days</option>
+					<option value="express">Express: next day</option>
+					<option value="overnight">Overnight</option>
+				</select>
+			</div>
+			<a href="docs-dialogs.html" data-role="button" data-rel="back" data-theme="b">Sounds good</a>       
+			<a href="docs-dialogs.html" data-role="button" data-rel="back" data-theme="c">Cancel</a>  
+			  
+		</div>
+	</div>
+
+
+</body>
+</html>

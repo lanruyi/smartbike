@@ -1,0 +1,96 @@
+
+    public function findStationMonthSavingDataTable($station_id,$std_station_id,$start_str,$stop_str){
+
+        $station = $this->station->find_sql($station_id);
+        $load_num = $station['load_num'];
+        if($std_station_id){
+        $std_station = $this->station->find_sql($std_station_id);
+            $std_load_num = $std_station['load_num'];
+        }else{
+            $std_load_num = 0;
+        }
+        $t = new DateTime($start_str);
+        $stop = new DateTime($stop_str);
+        $query = $this->db->query("select * from daydatas where station_id = ? and day>=? and day<=? order by day asc",
+            array($station_id,$t->format("Ymd"),$stop->format("Ymd")));
+        $daydatas = $query->result_array();
+        
+        //查出所有基准站的能耗数据 并把数据结果改为hash 以时间为key
+        $query = $this->db->query("select * from daydatas where station_id = ? and day>=? and day<=? order by day asc",
+            array($std_station_id,$t->format("Ymd"),$stop->format("Ymd")));
+        $std_daydatas = $query->result_array();
+
+        $stds = array();
+        foreach($std_daydatas as  $dd){
+            $stds[$dd['day']] = $dd;
+        }
+        
+        $count = array("main_energy"=>0,"std_main_energy"=>0,"total"=>count($daydatas));
+        $sum = array("main_energy"=>0,"std_main_energy"=>0,"err"=>"");
+        
+        foreach($daydatas as &$daydata){
+            $daydata['err'] = ""; 
+            $daydata['time'] = $daydata['day']; 
+            $daydata['ac_save'] = null; 
+            $daydata['ac_save_p'] = null; 
+            $daydata['std_ac_energy'] = null;
+            $daydata['std_dc_energy'] = null;
+            
+            $daydata['load_num']=$load_num;
+            $daydata['std_load_num']=$std_load_num;
+            $daydata['std_main_energy'] = null;
+            $daydata['contract_energy_saving_rate'] = null;
+
+            if(!isset($stds[$daydata['day']])){
+                $daydata['err'] .= " 基准站能耗统计有误1";
+            }else{
+                $std = $stds[$daydata['day']];
+                $daydata['std_ac_energy']   = $std['ac_energy'];
+                $daydata['std_dc_energy']   = $std['dc_energy'];
+                $daydata['std_main_energy'] = $std['main_energy'];
+                if(!h_av_day_energy($std['ac_energy'])){
+                    $daydata['err'] .= " 基准站能耗统计有误2";
+                }else{
+                    $sum['std_main_energy'] += $std['main_energy'];
+                    $count['std_main_energy'] ++;
+                }
+            }
+
+            if(!h_av_day_energy($daydata['ac_energy'])){
+                $daydata['err'] .= " 基准站能耗统计有误3";
+            }else{
+                $sum['main_energy'] += $daydata['main_energy'];
+                $count['main_energy'] ++;
+            }
+                
+            if(!$daydata['err']){
+                $daydata['ac_save'] = round($std['ac_energy'] - $daydata['ac_energy'],2);
+                $daydata['ac_save_p'] = round($daydata['ac_save']*100/$std['ac_energy'],2);
+                $daydata['contract_energy_saving_rate']  = $this->contract_energy_saving_rate_v0($std['main_energy'], $daydata['main_energy'], $std['dc_energy'], $daydata['dc_energy']);
+            }
+        }
+        unset($daydata);
+
+
+
+        if($count['main_energy']>0){
+            $sum['main_energy'] = round($sum['main_energy']*$count['total']/$count['main_energy'],2);
+        }else{
+            $sum['main_energy'] = null;
+            $sum['err'] = "本月main能耗有问题";
+        }
+        if($count['std_main_energy']>0){
+            $sum['std_main_energy'] = round($sum['std_main_energy']*$count['total']/$count['std_main_energy'],2);
+        }else{
+            $sum['std_main_energy'] = null;
+            $sum['err'] = "本月基准站能耗有问题";
+        }
+        $sum['contract_energy_saving_rate'] = null;
+        if(!$sum['err']){
+                $sum['contract_energy_saving_rate']  = $this->contract_energy_saving_rate_v0(
+                        $sum['std_main_energy'], $sum['main_energy'], $std_load_num, $load_num);
+        }
+        $result['days'] = $daydatas; 
+        $result['total'] = $sum; 
+        return $result;
+    }

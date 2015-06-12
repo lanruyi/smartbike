@@ -1,0 +1,16 @@
+#!/bin/sh
+cd /home/wwwroot/esproject
+git pull 
+chown -R www:www ./
+\cp script/cron /var/spool/cron/www
+chown www:www /var/spool/cron/www
+chmod 644 /var/spool/cron/www
+crontab -u www -l
+
+#./script/lnmp restart
+/etc/init.d/nginx stop 
+/etc/init.d/php-fpm stop
+/etc/init.d/nginx start
+/etc/init.d/php-fpm start
+
+/usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake sys migrate 0

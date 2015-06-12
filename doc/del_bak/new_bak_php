@@ -1,0 +1,374 @@
+
+    //public function findWarningNumofStation($statioin,$history=false){
+        //if($history){
+            //$query = $em->createQuery('SELECT COUNT(w.id) FROM Entities\Warning w where station='.$station);
+        //}else{
+            //$query = $em->createQuery('SELECT COUNT(w.id) FROM Entities\Warning w where station='.$station.' and status='.ESC_WARNING_STATUS__OPEN);
+        //}
+        //$count = $query->getSingleScalarResult();
+        //return $count;
+    //}
+
+
+    //public function close($warning){
+        //$now = new DateTime();
+        //$warning->setStatus(ESC_WARNING_STATUS__CLOSED);
+        //$warning->setEndTime($now); 
+        //$this->save($warning);
+    //}
+
+    //public function closeOpenWarning($station,$type){
+        //$_warning = $this->findOneOpenedWarning($station,$type);
+        //if($_warning){
+            //$_warning->close();
+            //$this->save($_warning);
+        //}else{
+            //return null;
+        //}
+    //}
+
+
+
+
+
+
+    //public function findALLOpenedWarnings(){
+        //return $this->findBy(array("status"=>ESC_WARNING_STATUS__OPEN));
+    //}
+
+    //public function findALLOpenedWarningsByStation($station){
+        //return $this->findBy(array("station_id"=>$station->getId(),"status"=>ESC_WARNING_STATUS__OPEN));
+    //}
+
+    //public function findOneOpenedWarning($station,$type){
+        //return $this->findOneBy(array("status"=>ESC_WARNING_STATUS__OPEN,"station"=>$station,"type"=>$type));
+    //}
+
+    //public function findALLOpenedDataShortWarnings($station = null){
+        //$warning_types = array(ESC_WARNING_TYPE__485_DIE);
+        //$conditions = array("status"=>ESC_WARNING_STATUS__OPEN,"type"=>$warning_types);
+        //if($station){
+            //$conditions += array("station"=>$station);
+        //}
+        //return $this->findBy($conditions);
+    //}
+
+    //public function findALLOpenedDataLongWarnings($station = null){
+        //$warning_types = array(ESC_WARNING_TYPE__INDOORTMP_HIGH,
+                              //ESC_WARNING_TYPE__BOXTMP_HIGH,
+                              //ESC_WARNING_TYPE__SENSOR_INDOOR_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_OUTDOOR_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_BOX_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_COLDS0_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_COLDS1_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_ENERGY_MAIN_BROKEN,
+							  //ESC_WARNING_TYPE__SENSOR_ENERGY_DC_BROKEN,
+                                                          //ESC_WARNING_TYPE__UTILITY_FAILURE,
+                                                          //ESC_WARNING_TYPE__ESG_TIME_INCORRECT);
+        //$conditions = array("status"=>ESC_WARNING_STATUS__OPEN,"type"=>$warning_types);
+        //if($station){
+            //$conditions += array("station"=>$station);
+        //}
+        //return $this->findBy($conditions);
+    //}
+
+    //public function findALLOpenedOtherWarnings($station = null){
+        //$warning_types = array(ESC_WARNING_TYPE__DISCONNECT,
+                              //ESC_WARNING_TYPE__MAINTAINANCE_BUTTON);
+        //$conditions = array("status"=>ESC_WARNING_STATUS__OPEN,"type"=>$warning_types);
+        //if($station){
+            //$conditions += array("station"=>$station);
+        //}
+        //return $this->findBy($conditions);
+    //}
+
+
+
+
+  public function getUpdateRomStatus_sql($station){
+        if ($station['new_rom_id'] === NULL) {
+            return 0;
+        } else if ($new_rom = $this->rom->find_sql($station['new_rom_id'])) {
+            if ($station['current_part_id'] === NULL) {
+                // 1. start download;
+                return 1;
+            } else if ($station['current_part_id'] < $this->rom->partNum_sql($new_rom) - 1) {
+                // 2. in downloading;
+                return 2;
+            } else if ($station['current_part_id'] == $this->rom->partNum_sql($new_rom) - 1) {
+                // 3. finish the download, wait for confirm;
+                return 3;
+            } else {
+                // 4. confirm progress;
+                return 4;
+            }
+        } else {
+            $station_condition = array();
+            $station_condition['new_rom_id']=null;
+            $station_condition['current_part_id']=null;
+            $this->station->update_sql($station['id'],$station_condition);
+            return 0;
+        }
+  }
+
+  
+  public function getUpdateRomStatus($station){
+        if ($station->getNewRomId() === NULL) {
+            return 0;
+        } else if ($new_rom = $this->rom->find($station->getNewRomId())) {
+            if ($station->getCurrentPartId() === NULL) {
+                // 1. start download;
+                return 1;
+            } else if ($station->getCurrentPartId() < $this->rom->partNum($new_rom) - 1) {
+                // 2. in downloading;
+                return 2;
+            } else if ($station->getCurrentPartId() == $this->rom->partNum($new_rom) - 1) {
+                // 3. finish the download, wait for confirm;
+                return 3;
+            } else {
+                // 4. confirm progress;
+                return 4;
+            }
+        } else {
+            $station->setNewRomId(null);
+            $station->setCurrentPartId(null);
+            $this->station->save($station);
+            return 0;
+        }
+  }
+
+
+
+
+    public function findSavingDaydata($station,$day){
+        $day = h_dt_start_time_of_day($day);
+        $station_id = $station->getId();
+        $station_type = $station->getStationType();
+        $load_num = $station->getLoadNum();
+        $err = "";
+        $result = array();
+        if(ESC_STATION_TYPE_STANDARD == $station_type){
+            $result['err'] = " 本站为基准站";
+            return $result;
+        }
+        if(h_dt_is_today_or_future($day)){
+            $result['err'] = " 本日数据暂未统计";
+            return $result;
+        }
+        $query = $this->db->query("select * from daydatas where station_id = ? and day=?",
+            array($station_id,$day));
+        $daydatas = $query->result_array();
+        if(!$daydatas){
+            $result['err'] = " 本日无数据(未建设)";
+            return $result;
+        }else{
+            $result = $daydatas[0];
+            if(!h_av_day_energy($result['ac_energy'])){
+                $result['err'] = " 本日数据统计有误";
+                return $result;
+            }
+        }
+
+        if (ESC_STATION_TYPE_NPLUSONE == $station_type){
+            if($result['day_type'] == ESC_DAYDATA_DAY_TYPE__STANDARD){
+                $err .= " 本日为基准日";
+            }else{
+                $query = $this->db->query("select * from daydatas where station_id = ? and day<? and day_type=? order by day desc limit 1",
+                    array($station_id,$day,ESC_DAYDATA_DAY_TYPE__STANDARD));
+                $res = $query->result_array();
+                if(!$res){ 
+                    $err .= " 往前找不到基准日";
+                }elseif(!h_av_day_energy($res[0]['ac_energy'])){
+                    $err .= " 基准日统计数据有误";
+                }else{
+                    $result['std_ac_energy'] = $res[0]['ac_energy'];
+                    $result['saving'] = round($result['std_ac_energy'] - $result['ac_energy'],2);
+                    $result['saving_p'] = round($result['saving']*100/$result['std_ac_energy'],2);
+                }
+            } 
+        }else{
+            $std_station = $this->station->find_single_standard_station($station);
+            if(!$std_station){
+                $err .= " 无可对比基准站";
+            }else{
+                $query = $this->db->query("select * from daydatas where station_id = ? and day=?",
+                    array($std_station->getId(),$day));
+                $res = $query->result_array();
+               
+                if(!$res){ 
+                    $err .= " 找不到基准站当天数据";
+                }elseif(!h_av_day_energy($res[0]['ac_energy'])){
+                    $err .= " 基准站当天数据统计有误";
+                }else{
+                    $result['std_ac_energy'] = $res[0]['ac_energy'];
+                    $result['std_dc_energy'] = $res[0]['dc_energy'];
+                    $result['saving'] = round($result['std_ac_energy'] - $result['ac_energy'],2);
+                    $result['saving_p'] = round($result['saving']*100/$result['std_ac_energy'],2);
+                    $result['contract_energy_saving_rate'] = $this->contract_energy_saving_rate_v0(
+                       $res[0]['main_energy'],$result['main_energy'],$res[0]['dc_energy'],$result['dc_energy']);
+                    
+                    $result['contract_energy_saving_rate1'] = $this->contract_energy_saving_rate_v0(
+                       $res[0]['main_energy'],$result['main_energy'],$std_station->getLoadNum(),$station->getLoadNum());
+                }
+            }
+        }
+
+        $result['err'] = $err;
+        return $result;
+    }
+
+
+
+    private function gzip_compress_file($srcName, $dstName)
+    {
+        $success = false;
+        $data = file_get_contents($srcName);
+        if ($data != "")
+            $success = $this->gzip_writeToFile($dstName,$data);
+        return $success;
+    }
+
+    private function gzip_writeToFile($dstName,$data)
+    {
+        $zp = gzopen($dstName, "wb9");
+        $success = false;
+        if ($zp)
+        {
+            gzwrite($zp, $data);
+            gzclose($zp);
+            $success = true;
+        }
+        return $success;
+    }
+
+
+# backup database 3:00
+# 0 3 * * * /usr/bin/mysqldump -uroot -p'hgjn18s!' esdata | gzip > /home/wwwbak/esdata`date +%Y-%m-%d_%H`.sql.gz
+# 5  * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake hourdata calc_hourdata_now
+# 5  * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period go_refresh_statistics_now hour 
+#15 0 * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period go_refresh_statistics_now day       
+
+    public function update_rom(){
+        $data['title'] = "更新rom";
+        $station = $this->station->find($this->uri->segment(4));
+        $data['station'] = $station;
+        $data['roms'] = $this->rom->findBy(array());
+        if($station->getNewRomId() === NULL){
+            $data['status'] = 0;
+        }else if($data['new_rom'] = $this->rom->find($station->getNewRomId())){
+            if($station->getCurrentPartId() === NULL){
+                // 1. start download;
+                $data['status'] = 1;
+            } else if($station->getCurrentPartId() < $this->rom->partNum($data['new_rom'])-1){
+                // 2. in downloading;
+                $data['status'] = 2;
+            }else if($station->getCurrentPartId() == $this->rom->partNum($data['new_rom'])-1){
+                // 3. finish the download, wait for confirm;
+                $data['status'] = 3;
+            }else{
+                // 4. confirm progress;
+                $data['status'] = 4;
+            } 
+        }else{
+            $station->setNewRomId(null);
+            $station->setCurrentPartId(null);
+            $this->station->save($station);
+            $data['status'] = 0;
+        }
+        $this->load->view('templates/backend_header', $data);
+        $this->load->view('backend/menu');
+        $this->load->view('backend/station/update_rom');
+        $this->load->view('templates/backend_footer');
+    }
+
+    public function reset_update_rom(){
+        $_station_id = $this->uri->segment(4); 
+        $station = $this->station->find($_station_id);
+        $station->setNewRomId(null);
+        $station->setCurrentPartId(null);
+        $this->station->save($station);
+        if($this->uri->segment(5)=='s'){
+            redirect(urldecode($this->input->get('backurl')), 'location');
+        }
+        redirect('/backend/station/update_rom/'.$_station_id, 'location');
+    }
+    
+    public function confirm_update_rom($_station_id){
+        $station = $this->station->find($_station_id);
+        if($station){
+            $this->command->newUrcCommand($_station_id,$this->curr_user['id']);
+            // +1 means going into confirm progress(urc)
+            $station->setCurrentPartId($station->getCurrentPartId()+1);
+            $this->station->save($station);
+        }
+        redirect('/backend/station/update_rom/'.$_station_id, 'location');
+    }
+
+
+
+
+    public function start_update_rom(){
+        $_new_rom_id = $this->input->post('new_rom_id');
+        $_station_id = $this->input->post('station_id');
+
+        $station = $this->station->find_sql($_station_id);
+        if($station['rom_id'] == $_new_rom_id ){
+            return;
+        }
+        $rom = $this->rom->find_sql($_new_rom_id);
+        if($rom){
+            $_arg_str = "{\"rom_id\":\"".$rom['id']
+                    ."\",\"num\":\"".$this->rom->partNum_sql($rom)
+                    ."\",\"size\":\"".$rom['size']
+                    ."\",\"name\":\"".$rom['name']."\"}";
+            $this->command->newUrCommand($_station_id,$_arg_str,$this->curr_user['id']);
+            $this->station->update_sql($_station_id,array("new_rom_id"=>$rom['id']));
+        }
+        redirect('/backend/station/update_rom/'.$_station_id, 'location');
+    }
+
+
+
+    public function batch_update_rom(){
+        $data['title'] = "基站批量固件更新";
+        $stations = array();
+        $station_ids = $this->input->post('station_ids');
+        if(!$station_ids){
+            if(isset($_SESSION['multi_station_ids'])){
+                $station_ids = $_SESSION['multi_station_ids'];
+            }else{
+                $this->session->set_flashdata('flash_err', '未选择基站！');
+                redirect('/backend/station/slist', 'location');
+            }
+        }
+        foreach ($station_ids as $id) {
+            $station = $this->station->find($id);
+            array_push($stations, $station);
+        }
+        
+        $data['stations'] = $stations;
+        $data['roms'] = $this->rom->findBy(array(),array('created'=>'desc'));
+        $_SESSION['multi_station_ids'] = $station_ids;
+        
+        $this->load->view('templates/backend_header', $data);
+        $this->load->view('backend/menu');
+        $this->load->view('backend/station/batch_update_rom');
+        $this->load->view('templates/backend_footer');       
+    }
+    
+    public function batch_update_rom_process(){
+        $rom = $this->rom->find_sql($this->input->post('new_rom_id'));
+        $station_ids = $_SESSION['multi_station_ids'];
+        foreach ($station_ids as $station_id) {
+            
+            $_arg_str = "{\"rom_id\":\"".$rom['id']
+                    ."\",\"num\":\"".$this->rom->partNum_sql($rom)
+                    ."\",\"size\":\"".$rom['size']
+                    ."\",\"name\":\"".$rom['name']."\"}";
+            $this->command->newUrCommand($_station_id,$_arg_str,$this->curr_user['id']);
+            $this->station->update_sql($station_id,array('new_rom_id'=>$rom['id']));
+        }
+        
+        $this->session->set_flashdata('flash_succ','批量固件升级启动成功！');
+        redirect('/backend/station/batch_update_rom', 'location');        
+    }

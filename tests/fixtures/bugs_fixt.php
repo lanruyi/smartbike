@@ -1,0 +1,25 @@
+<?
+$d = array(
+    '1'=> array("id"=>1, "station_id"=>34, "type"=>ESC_BUG__SENSOR_INDOOR_BROKEN, "status"=>1, "start_time"=>"2012-11-29 20:20:02", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '2'=> array("id"=>2, "station_id"=>34, "type"=>ESC_BUG__SENSOR_BOX_BROKEN, "status"=>1, "start_time"=>"2012-11-27 13:20:01", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '3'=> array("id"=>3, "station_id"=>34, "type"=>ESC_BUG__SENSOR_COLDS1_BROKEN, "status"=>1, "start_time"=>"2012-11-29 06:50:01", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '4'=> array("id"=>4, "station_id"=>34, "type"=>ESC_BUG__SMART_METER_BROKEN, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '5'=> array("id"=>5, "station_id"=>34, "type"=>ESC_BUG__SENSOR_OUTDOOR_BROKEN, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '6'=> array("id"=>6, "station_id"=>674, "type"=>ESC_BUG__DISCONNECT, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '7'=> array("id"=>7, "station_id"=>702, "type"=>ESC_BUG__SENSOR_BOX_BROKEN, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '8'=> array("id"=>8, "station_id"=>840, "type"=>ESC_BUG__SMART_METER_BROKEN, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '9'=> array("id"=>9, "station_id"=>840, "type"=>ESC_BUG__SENSOR_BOX_BROKEN, "status"=>1, "start_time"=>"2012-11-22 09:55:24", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '10'=> array("id"=>10, "station_id"=>2, "type"=>ESC_BUG__SENSOR_INDOOR_BROKEN, "status"=>1, "start_time"=>"2012-11-29 20:20:02", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL),
+    '11'=> array("id"=>11, "station_id"=>2, "type"=>ESC_BUG__SENSOR_BOX_BROKEN, "status"=>1, "start_time"=>"2012-11-27 13:20:01", "update_time"=>"0000-00-00 00:00:00",
+     "stop_time"=>"0000-00-00 00:00:00", "project_id"=>4, "city_id"=>40, "user_id"=>NULL)
+);

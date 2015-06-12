@@ -1,0 +1,728 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+
+define('ESC_STATISTICS_TYPE__HOUR',1);
+define('ESC_STATISTICS_TYPE__DAY',2);
+define('ESC_STATISTICS_TYPE__MONTH',3);
+define('ESC_STATISTICS_TYPE__MONTH6P1',4);
+define('ESC_STATISTICS_TYPE__MONTHNP1',5);
+
+class Statistics extends ES_Model {
+
+  var $thisday_start;
+  var $thisday_stop;
+  var $thismonth_start;
+  var $thismonth_stop;
+  public function __construct()
+  {
+    $this->load->helper(array());
+    $this->load->model(array('data'));
+    $this->table_name = "statisticses";
+  }
+
+  public function findDayNP1Statisticslist_hc($station,$time_str,$getparam){
+      $ftime = new DateTime(h_dt_np1_date_str($time_str,$station));
+      $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+      $loops = 24;
+      $time_interval = new DateInterval('PT1H');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ftime->format('r'),ESC_STATISTICS_TYPE__HOUR);
+          array_push($res,'['.(strtotime($ptime->format('r'))*1000).','.($_s?$_s->$getparam():"null").']');
+          $ptime->add($time_interval);
+          $ftime->add($time_interval);
+      }
+      return $res;
+  }
+
+  public function findDayNP1Statisticslist($station,$time_str,$getparam){
+      $ftime = new DateTime(h_dt_np1_date_str($time_str,$station));
+      $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+      $loops = 24;
+      $time_interval = new DateInterval('PT1H');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ftime->format('r'),ESC_STATISTICS_TYPE__HOUR);
+          array_push($res, array("time" => $ptime->format('r'), "statistics" => $_s));
+          $ptime->add($time_interval);
+          $ftime->add($time_interval);
+      }
+      return $res;
+
+  }
+
+
+  public function findDayNP1Statisticslist_chart($station,$time_str,$getparam){
+      $mem_key = 'day_np1_chart_Statistics_list_'.$station->getId().'_'.$getparam.'_'.h_dt_date_str_no_time($time_str);
+      $res = $this->cache->get($mem_key);
+      if($res){
+          return $res;
+      }
+      $ftime = new DateTime(h_dt_np1_date_str($time_str,$station));
+      $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+      $loops = 24;
+      $time_interval = new DateInterval('PT1H');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ftime->format('r'),ESC_STATISTICS_TYPE__HOUR);
+          array_push($res,array(strtotime($ptime->format('r')),$_s?$_s->$getparam():0));
+          $ptime->add($time_interval);
+          $ftime->add($time_interval);
+      }
+      if(h_dt_is_time_this_day($time_str) || h_dt_is_future_day($time_str)){
+          $cache_time = 5;
+      }else{
+          $cache_time=1440*3;
+      }
+      $this->cache->save($mem_key,$res,$cache_time*60); 
+      return $res;
+  }
+
+  public function findDayStatisticslist_chart($station,$time_str,$getparam){
+      $mem_key = 'day_chart_Statistics_list_'.$station->getId().'_'.$getparam.'_'.h_dt_date_str_no_time($time_str);
+      $res = $this->cache->get($mem_key);
+      if($res){
+          return $res;
+      }
+      $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+      $loops = 24;
+      $time_interval = new DateInterval('PT1H');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ptime->format('r'),ESC_STATISTICS_TYPE__HOUR);
+          array_push($res,array(strtotime($ptime->format('r')),$_s?$_s->$getparam():0));
+          $ptime->add($time_interval);
+      }
+      if(h_dt_is_time_this_day($time_str) || h_dt_is_future_day($time_str)){
+          $cache_time = 5;
+      }else{
+          $cache_time=1440*3;
+      }
+      $this->cache->save($mem_key,$res,$cache_time*60); 
+      return $res;
+  }
+
+  public function findDayStatisticslist_hc($station,$time_str,$getparam){
+      $mem_key = 'day_hc_Statistics_list_'.$station->getId().'_'.$getparam.'_'.h_dt_date_str_no_time($time_str);
+      $res = $this->cache->get($mem_key);
+      if($res){
+          return $res;
+      }
+      $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+      $loops = 24;
+      $time_interval = new DateInterval('PT1H');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ptime->format('r'),ESC_STATISTICS_TYPE__HOUR);
+          if($_s){
+              $param = $_s->$getparam();
+              if($getparam == "getAcEnergy" && $param < 0){
+                $param = 0.0;
+              }
+          }else{
+            $param = "null";
+          }
+          array_push($res,'['.(strtotime($ptime->format('r'))*1000).','.$param.']');
+          $ptime->add($time_interval);
+      }
+      if(h_dt_is_time_this_day($time_str) || h_dt_is_future_day($time_str)){
+          $cache_time = 5;
+      }else{
+          $cache_time=1440*3;
+      }
+      $this->cache->save($mem_key,$res,$cache_time*60); 
+      return $res;
+  }
+
+  public function findMonthNP1Statisticslist_hc($station,$time_str,$getparam){
+      $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+      $loops = date('t',h_dt_date_str_timestamp($time_str));
+      $time_interval = new DateInterval('P1D');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,h_dt_np1_date_str($ptime->format('r'),$station),ESC_STATISTICS_TYPE__DAY);
+          array_push($res,'['.(strtotime($ptime->format('r'))*1000).','.($_s?$_s->$getparam():"null").']');
+          $ptime->add($time_interval);
+      }
+      return $res;
+  }
+  
+  public function findMonthStatisticslist_hc($station,$time_str,$getparam){
+      $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+      $loops = date('t',h_dt_date_str_timestamp($time_str));
+      $time_interval = new DateInterval('P1D');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_s = $this->statistics->findStatistics($station,$ptime->format('r'),ESC_STATISTICS_TYPE__DAY);
+          array_push($res,'['.(strtotime($ptime->format('r'))*1000).','.($_s?$_s->$getparam():"null").']');
+          $ptime->add($time_interval);
+      }
+      return $res;
+  }
+
+  public function findProjectMonthStatisticslist_hc($sav_station,$std_station,$time_str,$getparam,$count){
+      $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+      $loops = date('t',h_dt_date_str_timestamp($time_str));
+      $time_interval = new DateInterval('P1D');
+      $res = array();
+      for ($i = 0;$i<$loops;$i++){
+          $_saving = $this->statistics->findStatistics($sav_station,$ptime->format('r'),ESC_STATISTICS_TYPE__DAY);
+		  $_standard = $this->statistics->findStatistics($std_station,$ptime->format('r'),ESC_STATISTICS_TYPE__DAY);
+		  array_push($res,array((strtotime($ptime->format('r'))*1000),(($_saving&&$_standard)?($_standard->$getparam()-$_saving->$getparam())*$count:"null")));
+          $ptime->add($time_interval);
+      }
+      return $res;
+  }
+
+  public function findLoadBuildingMonthStatisticslist_hc($sav_station,$std_station,$time_str,$getparam){
+      $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+      $_saving = $this->statistics->findStatistics($sav_station,$ptime->format('r'),ESC_STATISTICS_TYPE__MONTH);
+	  $_standard = $this->statistics->findStatistics($std_station,$ptime->format('r'),ESC_STATISTICS_TYPE__MONTH);
+	  return ($_saving&&$_standard)?($_standard->$getparam()-$_saving->$getparam()):"null";
+  }
+  
+  public function findMonthNP1Statisticslist($station, $time_str) {
+        $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+        $loops = date('t', h_dt_date_str_timestamp($time_str));
+        $time_interval = new DateInterval('P1D');
+        $res = array();
+        for ($i = 0; $i < $loops; $i++) {
+            $_s = $this->statistics->findStatistics($station, h_dt_np1_date_str($ptime->format('r'),$station), ESC_STATISTICS_TYPE__DAY);
+            array_push($res,$_s);
+            $ptime->add($time_interval);
+        }
+        return $res;
+    }
+
+  public function findMonthStatisticslist($station, $time_str) {
+        $ptime = new DateTime(h_dt_start_time_of_month($time_str));
+        $loops = date('t', h_dt_date_str_timestamp($time_str));
+        $time_interval = new DateInterval('P1D');
+        $res = array();
+        for ($i = 0; $i < $loops; $i++) {
+            $_s = $this->statistics->findStatistics($station, $ptime->format('r'), ESC_STATISTICS_TYPE__DAY);
+            array_push($res,$_s);
+            $ptime->add($time_interval);
+        }
+        return $res;
+    }
+
+  public function findDayStatisticslist($station, $time_str) {
+        $ptime = new DateTime(h_dt_start_time_of_day($time_str));
+        $loops = 24;
+        $time_interval = new DateInterval('PT1H');
+        $res = array();
+        for ($i = 0; $i < $loops; $i++) {
+            $_s = $this->statistics->findStatistics($station, $ptime->format('r'), ESC_STATISTICS_TYPE__HOUR);
+            if ($_s) {
+                array_push($res, array("time" => $ptime->format('r'), "statistics" => $_s));
+            }
+            $ptime->add($time_interval);
+        }
+        return $res;
+    }
+
+    public function findStatistics($station,$time_str,$type){
+      if(ESC_STATISTICS_TYPE__HOUR == $type){
+         if (h_dt_is_time_future_hour($time_str)){ return null; }
+         $start_time = new DateTime(h_dt_start_time_of_hour($time_str));
+      }else if(ESC_STATISTICS_TYPE__DAY == $type){
+         if (h_dt_is_future_day($time_str)){ return null; }
+         $start_time = new DateTime(h_dt_start_time_of_day($time_str));
+      }else if(ESC_STATISTICS_TYPE__MONTH == $type){
+         if (h_dt_is_time_future_month($time_str)){ return null; }
+         $start_time = new DateTime(h_dt_start_time_of_month($time_str));
+      }else if(ESC_STATISTICS_TYPE__MONTHNP1 == $type){
+         if (h_dt_is_time_future_month($time_str)){ return null; }
+         $start_time = new DateTime(h_dt_start_time_of_month($time_str));         
+      }
+      return $this->findOneBy(array("station"=>$station,"time"=>$start_time,"type"=>$type));
+  }
+  
+  public function setStatistics($station_id, $time_str, $type, $update = FALSE) {
+        //====================时统计============================
+        if (ESC_STATISTICS_TYPE__HOUR == $type) {
+            if (h_dt_is_time_future_hour($time_str) || h_dt_is_time_this_hour($time_str)) { return null; }
+            $_end_time_str = h_dt_stop_time_of_hour($time_str);
+            $_start_time_str = h_dt_start_time_of_hour($time_str);
+        //====================日统计============================
+        } else if (ESC_STATISTICS_TYPE__DAY == $type) {
+            if (h_dt_is_future_day($time_str) || h_dt_is_time_this_day($time_str)) { return null; }
+            $_end_time_str = h_dt_stop_time_of_day($time_str);
+            $_start_time_str = h_dt_start_time_of_day($time_str);
+        //====================月统计============================
+        } else if (ESC_STATISTICS_TYPE__MONTH == $type) {
+            if (h_dt_is_time_future_month($time_str)) {
+                return null;
+            }else if (h_dt_is_time_this_month($time_str)) {
+                $_end_time_str = h_dt_dt_stop_time_of_day(h_dt_date_str("-1 day"));
+            } else {
+                $_end_time_str = h_dt_stop_time_of_month($time_str);
+            }
+            $_start_time_str = h_dt_start_time_of_month($_end_time_str);
+        //====================N+1月统计============================
+        } else if (ESC_STATISTICS_TYPE__MONTHNP1 == $type){
+            if (h_dt_is_time_future_month($time_str)) {
+                return null;
+            }else if (h_dt_is_time_this_month($time_str)) {
+                $_end_time_str = h_stop_time_of_day(h_dt_date_str("-1 day"));
+            }else {
+                $_end_time_str = h_dt_stop_time_of_month($time_str);
+            }
+            $_start_time_str = h_dt_start_time_of_month($_end_time_str);
+            return $this->newNP1Statistics($station_id, $_start_time_str, $_end_time_str, $update);
+        }
+        return $this->newStatistics($station_id, $type, $_start_time_str, $_end_time_str, $update);
+    }
+  
+  public function findDayStatisticsByStationAndTime($station,$time_str,$update=TRUE){
+      if (h_dt_is_future_day($time_str)){
+          return null;
+      }
+      $_start_time_str = h_dt_start_time_of_day($time_str);
+      if (h_dt_is_time_this_day($time_str)){
+          $_now = new DateTime();
+          $_end_time_str = $_now->format('r');
+      }else{
+          $update=FALSE;
+          $_end_time_str = h_dt_stop_time_of_day($time_str);
+      }
+      return $this->newStatistics($station,ESC_STATISTICS_TYPE__DAY,$_start_time_str,$_end_time_str,$update);
+  }
+
+
+  public function delStatistics($station,$time_str,$type){
+      $start_time_str = h_dt_start_time_of_hour($time_str);
+      $start_time = new DateTime($start_time_str);
+      $_statistics = $this->doctrine->em->getRepository($this->entities_str)
+          ->findOneBy(array("station"=>$station,"time"=>$start_time,"type"=>$type));
+      if($_statistics){
+          $this->doctrine->em->remove($_statistics);
+          $this->doctrine->em->flush();
+      }
+  }
+
+  public function  newNP1Statistics($station_id,$start_time_str,$end_time_str,$update=true){
+      if (!$station_id){ return;}
+      $start_time_str = h_dt_date_str_db($start_time_str);
+      $_query = $this->db->query("select id from statisticses where station_id=? and time =? and type =?",array($station_id,$start_time_str,ESC_STATISTICS_TYPE__MONTHNP1));
+      $_statistics         = $_query->result_array();
+      $_query = $this->db->query("select id from statisticses where station_id=? and time =? and type =?",array($station_id,$start_time_str,ESC_STATISTICS_TYPE__MONTH));
+      $_statistics_normal  = $_query->result_array();
+      
+      if($_statistics){
+          if(FALSE === $update){
+             return;
+          }
+          $sql = "update statisticses set main_energy=?,ac_energy=?,dc_energy=? where id=".$_statistics[0]['id'];
+      }else{
+          if(!$_statistics_normal){
+              return;
+          }
+          $sql = "insert into statisticses (station_id,time,type,main_energy,ac_energy,dc_energy) values ($station_id,$start_time_str,".ESC_STATISTICS_TYPE__MONTHNP1.",?,?,?)";
+      }
+
+      $main_energy = null;
+      $dc_energy   = null;
+      $ac_energy   = null;
+      $cur_time = new DateTime($start_time_str);
+      $stop_time = new DateTime($end_time_str);
+      $station = $this->station->find($station_id);
+      while($cur_time < $stop_time){
+          $ftime_str = h_dt_np1_date_str($cur_time->format('r'),$station);
+          $_query = $this->db->query("select main_energy,dc_energy,ac_energy from statisticses where station_id=? and time =? and type =?",array($station_id,$ftime_str,ESC_STATISTICS_TYPE__DAY));
+          $_day_sta = $_query->result_array();
+          if($_day_sta){
+              $main_energy += $daysta[0]['main_energy'];
+              $dc_energy   += $daysta[0]['dc_energy'];
+              $ac_energy   += $daysta[0]['ac_energy'];
+          }
+          $cur_time->add(new DateInterval("P1D"));
+      }
+      $this->db->query($sql,array($main_energy,$dc_energy,$ac_energy));
+      return;
+
+  }
+
+  public function  newStatistics($station_id,$type,$start_time_str,$end_time_str,$update=true){
+      if (!$station_id){ return;}
+      $start_time_str = h_dt_date_str_db($start_time_str);
+      $_query = $this->db->query("select id from statisticses where station_id=? and time =? and type =?",array($station_id,$start_time_str,$type));
+      $_statistics = $_query->result_array();
+      if($_statistics){
+          if(FALSE === $update){
+              return;
+          }
+          $sql = "update statisticses set packets=?,main_energy=?,ac_energy=?,dc_energy=? where id=".$_statistics[0]['id'];
+      }else{
+          $sql = "insert into statisticses (station_id,time,type,packets,main_energy,ac_energy,dc_energy) values ($station_id,$start_time_str,$type,?,?,?,?)";
+      }
+      $nums = $this->data->generateDataNums($station_id,$start_time_str,$end_time_str);
+      if(!$nums){
+            $q = array($nums,null,null,null);
+      }else{
+            $_energies = $this->data->generateEnergies($station_id,$start_time_str,$end_time_str,$type);
+            $q = array($nums,$_energies['energy_main'],$_energies['energy_ac'],$_energies['energy_dc']);;
+      }
+      $this->db->query($sql,$q);
+      return;
+  }  
+
+  //////////////////////////////////////////////////////////////////////////////// 
+  // find for display
+  //////////////////////////////////////////////////////////////////////////////// 
+  
+  public function findMonthSwitchonPercentage($station,$time_str){
+      $_s = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      return $this->findSwitchonPercentage($_s);
+  }
+
+  public function findDaySwitchonPercentage($station,$time_str){
+      $_s = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+      return $this->findSwitchonPercentage($_s);
+  }
+
+  public function findSwitchonPercentage($statistics){
+      $result = array("fan_on"=>0,"colds_on_1"=>0,"colds_on_2"=>0,"all_off"=>0,
+          "fan_on_p"=>0,"colds_on_1_p"=>0,"colds_on_2_p"=>0,"all_off_p"=>0);
+      if($statistics ){
+          $_fan_on = $statistics->getFanTime();
+          $_short_time = $statistics->getColds0Time() < $statistics->getColds1Time()?$statistics->getColds0Time():$statistics->getColds1Time();
+          $_long_time  = $statistics->getColds0Time() >= $statistics->getColds1Time()?$statistics->getColds0Time():$statistics->getColds1Time();
+          //开一台空调时间
+          $_colds_on_1 = $_long_time - $_short_time; 
+          //开两台空调时间
+          $_colds_on_2 = $_short_time;
+
+          $_all_off = $statistics->getAllOffTime();
+          $_all = $_fan_on+$_colds_on_1+$_colds_on_2+$_all_off;
+          $result["fan_on"]     = $_fan_on;
+          $result["colds_on_1"] = $_colds_on_1;
+          $result["colds_on_2"] = $_colds_on_2;
+          $result["all_off"]    = $_all_off;
+          if($_all>0){
+              $result["fan_on_p"]     = round($_fan_on*100/$_all,2);
+              $result["colds_on_1_p"] = round($_colds_on_1*100/$_all,2);
+              $result["colds_on_2_p"] = round($_colds_on_2*100/$_all,2);
+              $result["all_off_p"]    = round($_all_off*100/$_all,2);
+          }
+      }
+      return $result;
+  }
+
+  public function findDayDcAcPercentage($station,$time_str){
+      $_s = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+      return $this->findDcAcPercentage($_s);
+  }
+
+  public function findMonthDcAcPercentage($station,$time_str){
+      $_s = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      return $this->findDcAcPercentage($_s);
+  }
+
+  public function findDcAcPercentage($statistics){
+      $result = array("ac"=>0,"ac_p"=>0,"dc"=>0,"dc_p"=>0);
+      if($statistics && $statistics->getMainEnergy() > 0){
+          $_main = $statistics->getMainEnergy();
+          $_ac = $statistics->getAcEnergy();
+          $_dc = $statistics->getDcEnergy();
+          $result["ac"] = $_ac;
+          $result["dc"] = $_dc;
+          $result["ac_p"] = round($_ac*100/$_main,2);
+          $result["dc_p"] = round($_dc*100/$_main,2);
+      }
+      return $result;
+  }
+
+  public function findMonthSavingPercentage($station,$std_station,$time_str){
+      $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      $_s2 = $this->statistics->findStatistics($std_station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      return $this->findSavingPercentage($_s1,$_s2);
+  }
+
+  public function findMonthNP1SavingPercentage($station,$time_str){
+      $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      $_s2 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTHNP1);
+      return $this->findSavingPercentage($_s1,$_s2);
+  }
+
+  
+  public function findDaySavingPercent($station,$time_str){
+      $err_str = "";
+      $result = array();
+      if (ESC_STATION_TYPE_NPLUSONE == $station->getStationType()){
+          if(!h_dt_np1_day($time_str,$station)){
+              $err_str="本日为基准日 无节能";
+          }elseif($time_str == h_dt_date_str_no_time("now")){
+              $err_str="本日节能数据暂未完全统计";
+          }else{
+              $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+              $_s2 = $this->statistics->findStatistics($station,h_dt_np1_date_str($time_str,$station),ESC_STATISTICS_TYPE__DAY);
+              if(!$_s2){
+                  $err_str="基准日数据未能正确统计";
+              }else if(!$_s1){
+                  $err_str="本日数据未能正确统计";
+              }else{
+                  $result = $this->findSavingPercentage($_s1,$_s2);
+              }
+          } 
+      }else if($station->isStandardStation()){
+          $err_str="本站为基准站 无节能";
+      }else{
+          $std_station = $this->station->find_single_standard_station($station);
+          if($time_str == h_dt_date_str_no_time("now")){
+              $err_str="本日节能数据暂未统计";
+          }else if(!$std_station){
+              $err_str="无可对比标准站";
+          }else{
+              $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+              $_s2 = $this->statistics->findStatistics($std_station,$time_str,ESC_STATISTICS_TYPE__DAY);
+              if(!$_s2){
+                  $err_str="基准站数据未能正确统计";
+              }else if(!$_s1){
+                  $err_str="本站数据未能正确统计";
+              }else{
+                  $result = $this->findSavingPercentage($_s1,$_s2);
+              }
+          }
+      }
+
+      $result['err'] = $err_str;
+      return $result;
+  }
+
+
+  public function findDaySavingPercentage($station,$std_station,$time_str){
+      $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+      if($station->getStationType() == ESC_STATION_TYPE_NPLUSONE){
+          $_s2 = $this->statistics->findStatistics($station,h_dt_np1_date_str($time_str,$station),ESC_STATISTICS_TYPE__DAY);
+      }else{
+          $_s2 = $this->statistics->findStatistics($std_station,$time_str,ESC_STATISTICS_TYPE__DAY);
+      }
+      return $this->findSavingPercentage($_s1,$_s2);
+  }
+
+
+  public function findDayNP1SavingPercentage($station,$time_str){
+      $_s1 = $this->statistics->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__DAY);
+      $_s2 = $this->statistics->findStatistics($station,h_dt_np1_date_str($time_str,$station),ESC_STATISTICS_TYPE__DAY);
+      return $this->findSavingPercentage($_s1,$_s2);
+  }
+
+
+  public function findSavingPercentage($statistics,$std_statistics){
+      $result = array("saving"=>0,"self"=>0,"std"=>0,"saving_p"=>0,"self_p"=>0);
+      if($statistics && $std_statistics ){
+          $_self = $statistics->getAcEnergy();
+          $_std = $std_statistics->getAcEnergy();
+          $_saving = $_std - $_self;
+          $result["saving"] = round($_saving,1);
+          $result["self"]   = round($_self,1);
+          $result["std"]    = round($_std,1);
+          if($_std >0 ){
+              $result["saving_p"]   = round($_saving*100/$_std,1);
+              $result["self_p"]     = round($_self*100/$_std,1);
+          }
+      }
+      return $result;
+  }
+
+
+  public function findMonthNP1SavingStatisticsList($station,$time_str){
+      $_s1 = $this->statistics->findMonthStatisticslist($station,$time_str);
+      $_s2 = $this->statistics->findMonthNP1Statisticslist($station,$time_str);
+      return $this->findSavingStatisticsList($_s1,$_s2);
+  }
+
+  public function findMonthSavingStatisticsList($station,$std_station,$time_str){
+      $_s1 = $this->statistics->findMonthStatisticslist($station,$time_str);
+      if($std_station){
+          $_s2 = $this->statistics->findMonthStatisticslist($std_station,$time_str);
+      }else{
+          $_s2 = null;
+      }
+      return $this->findSavingStatisticsList($_s1,$_s2);
+  }
+
+  public function findSavingStatisticsList($statistics,$std_statistics){
+        $std_data = array();
+        foreach ($statistics as $key => $statistic) {
+            $dataitem = array("s"=>$statistic, "ac_energy" => "", "dc_energy" => "", "main_energy" => "", "energy_save" => "", "energy_save_pg" => "");
+            if (!$statistic) {
+                continue;
+            } else if (!$std_statistics || !$std_statistics[$key]) {
+
+            } else {
+                $dataitem['ac_energy'] = $std_statistics[$key]->getAcEnergy();
+                $dataitem['dc_energy'] = $std_statistics[$key]->getDcEnergy();
+                $dataitem['main_energy'] = $std_statistics[$key]->getMainEnergy();
+                if(round($std_statistics[$key]->getAcEnergy(),2)>0){
+                    $dataitem['energy_save'] = $std_statistics[$key]->getAcEnergy() - $statistic->getAcEnergy();
+                    $dataitem['energy_save_pg'] = round($dataitem['energy_save'] / $std_statistics[$key]->getAcEnergy(),2);
+                }
+            }
+            array_push($std_data,$dataitem);
+        }
+        return $std_data;
+  }
+
+
+
+  public function findMonthNP1SavingStatistic($station,$time_str){
+      $_s1 = $this->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      $_s2 = $this->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTHNP1);
+      return $this->findSavingStatistic($_s1,$_s2);
+  }
+
+  public function findMonthSavingStatistic($station,$std_station,$time_str){
+      $_s1 = $this->findStatistics($station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      if($std_station){
+          $_s2 = $this->findStatistics($std_station,$time_str,ESC_STATISTICS_TYPE__MONTH);
+      }else{
+          $_s2 = null;
+      }
+      return $this->findSavingStatistic($_s1,$_s2);
+  }
+
+  public function findSavingStatistic($statistic,$std_statistic){
+      $dataitem = array("s"=>$statistic, "ac_energy" => "", "dc_energy" => "", "main_energy" => "", "energy_save" => "", "energy_save_pg" => "");
+      if (!$statistic || !$std_statistic) {
+          return null;
+      } else {
+          $dataitem['ac_energy'] = $std_statistic->getAcEnergy();
+          $dataitem['dc_energy'] = $std_statistic->getDcEnergy();
+          $dataitem['main_energy'] = $std_statistic->getMainEnergy();
+          if($std_statistic->getAcEnergy()>0){
+              $dataitem['energy_save'] = round($std_statistic->getAcEnergy() - $statistic->getAcEnergy(),2);
+              $dataitem['energy_save_pg'] = round($dataitem['energy_save'] / $std_statistic->getAcEnergy(),2);
+          }
+      }
+      return $dataitem;
+  }
+  
+  public function findMonthNP1SavingStatisticsListSql($s_array,$time_str){
+      $s_f = h_dt_last_7day_of_month($time_str);
+      $s_t = h_dt_date_str_db($s_f);
+      $p_t = h_dt_date_str_db(h_dt_stop_time_of_month($time_str));
+ 
+      $s_ids = array();
+      $sta_array = array();
+      foreach($s_array as $s){
+          array_push($s_ids, $s["id"]);
+      }
+      if($s_ids){
+          $sql = "select station_id,time,ac_energy from statisticses where station_id in (" . implode(",", $s_ids) . ") and type=" . ESC_STATISTICS_TYPE__DAY . " and time>=" . $s_t . " and time<=" . $p_t;
+          $query = $this->db->query($sql);
+          $sta_array = $query->result_array();
+      }
+
+      $statistics_list = array();
+      $stations_day_ac_sav = array();
+      foreach($s_array as $key_s=>$s){
+          $_std = array();
+          $_sav = array();
+          $_np1 = array();
+          $_t = new DateTime($s_f);
+          for(;$_t<new DateTime(h_dt_stop_time_of_month($time_str));){
+              if(!$key_s){ array_push($stations_day_ac_sav,0); }
+              array_push($_std,null);
+              array_push($_sav,null);
+              $rem = floor((strtotime($_t->format('r'))-strtotime($s["ns_start"]))/86400)%($s["ns"]+1);
+              if($rem){
+                  array_push($_np1,null);
+              }else{
+                  array_push($_np1,true);
+              }
+              $_t->add(new DateInterval('P1D'));
+          }
+
+          foreach($sta_array as $sta){
+              if($s['id'] != $sta["station_id"]){ continue; }
+              $n = (strtotime($sta['time'])-strtotime($s_f))/86400;
+              $_sav[$n] = $sta["ac_energy"];
+              $rem = floor((strtotime($sta["time"])-strtotime($s["ns_start"]))/86400)%($s["ns"]+1);
+              if(!$rem){
+                  for($i=0;$i<$s["ns"]+1;$i++){
+                      $_std[$n+$i] = $sta["ac_energy"];
+                  }
+              }
+          }
+
+          $item = array("day_ac_sav"=>array(),"month_ac_sav"=>"");
+          foreach($_np1 as $key=>$val){
+              if($key<7){ continue; }
+              if($val){
+                  array_push($item["day_ac_sav"],"/");
+              }else{
+                  array_push($item["day_ac_sav"],($_std[$key]&&$_sav[$key])?round($_std[$key]-$_sav[$key],2):"");
+                  $item['month_ac_sav'] += ($_std[$key]&&$_sav[$key])?round($_std[$key]-$_sav[$key],2):0;
+                  $stations_day_ac_sav[$key] += ($_std[$key]&&$_sav[$key])?round($_std[$key]-$_sav[$key],2):0;
+              }
+          }  
+          array_push($statistics_list,$item);
+      }
+
+      $stations_day_ac_sav = array_slice($stations_day_ac_sav,7,count($stations_day_ac_sav)-7);   
+      return array("list"=>$statistics_list,"day_total"=>array("stations_day_ac_sav"=>$stations_day_ac_sav,"stations_month_ac_sav"=>array_sum($stations_day_ac_sav)));
+  }
+  
+  public function findMonthNP1ConsumeStatisticsSql($s_array,$time_str){
+      $s_t = h_dt_date_str_db(h_dt_start_time_of_month($time_str));
+      $p_t = h_dt_date_str_db(h_dt_stop_time_of_month($time_str));
+ 
+      $s_ids = array();
+      $sta_array = array();
+      foreach($s_array as $s){
+          array_push($s_ids, $s["id"]);
+      }
+      if($s_ids){
+          $sql = "select station_id,time,ac_energy from statisticses where station_id in (" . implode(",", $s_ids) . ") and type=" . ESC_STATISTICS_TYPE__MONTHNP1. " and time>=" . $s_t . " and time<=" . $p_t;
+          $query = $this->db->query($sql);
+          $sta_array = $query->result_array();
+      }
+  }
+  
+    public function findMonthNP1SavingStatisticsSql($s_array,$time_str){
+      $result = array(); 
+      
+      $_t = new DateTime($time_str);
+      for($i=2;$i>=0;$i--){
+          $ac_sav_array = $this->findMonthNP1SavingStatisticsListSql($s_array, $_t->format('r'));
+          $item = array("month_ac_sav"=>array(),"month_ac_consume"=>array());
+          foreach($ac_sav_array["list"] as $sta){
+              array_push($item["month_ac_sav"],$sta["month_ac_sav"]);
+          }
+          array_push($result,$item);
+          $_t->sub(new DateInterval('P1M'));
+      }
+//      var_export($result);
+      return $result;
+  }
+
+  public function newEntity(){
+      $_statistics = new Entities\Statistics;
+      $_statistics->setType(0);
+      $_statistics->setTime(null);
+      $_statistics->setStation(null);
+      $_statistics->setMainEnergy(0);
+      $_statistics->setAcEnergy(0);
+      $_statistics->setDcEnergy(0);
+      $_statistics->setFanTime(0);
+      $_statistics->setColds0Time(0);
+      $_statistics->setColds1Time(0);
+      $_statistics->setAllOffTime(0);
+      $_statistics->setFanSwitchNum(0);
+      $_statistics->setColds0SwitchNum(0);
+      $_statistics->setColds1SwitchNum(0);
+      $_statistics->setIndoorTmpGtTime(0);
+      $_statistics->setBoxTmpGtTime(0);//todo
+      $_statistics->setNoPowerTime(0);//todo
+      $_statistics->setPackets(0);      
+      return $_statistics;
+  }
+
+
+}
+
+
+

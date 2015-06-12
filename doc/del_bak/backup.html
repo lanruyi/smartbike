@@ -1,0 +1,401 @@
+                 <? foreach($stations['6p1'] as $key=>$station){ ?>
+                   <li>
+                      <?= in_page_station_item($station) ?><span class="saving_p">昨日省:<?= (float)($stations['saving_p_6p1'][$key])."%" ?></span></li>
+                   <li class="saving"><span class="sparklines" values="0,0,100,<?= $stations['saving_p_6p1'][$key]?>"></span></li>
+                 <?}?>
+
+                <div style="hifloat:left;height:40px;">
+                 <?php if (!$station->isStandardStation()){?>
+                    新风类型: <?= station_fan_type_name_chn($station->getFanType())?> <br/>
+                 <?php } ?>
+                 空调0类型: <?= h_station_colds_type_name_chn($station->getColds0Type())?> <br/>
+                 空调1类型: <?= h_station_colds_type_name_chn($station->getColds1Type())?> 
+                </div>
+
+
+
+                     <?= h_station_type_mark($station->getStationType())?>
+                     <?= h_online_string($station->isOnline())?>
+
+
+
+<!-- column1 -------------------------------------------------------->		
+		<div class="savings">
+			<div class="savings_month">
+			<p><strong>月节能量TOP<i>3</i></strong> <!--foreach($cities)-->
+				<font><span><a class="">所有站点</a></span>
+				<span><a class="">6+1站</a></span>
+				<span><a class="active">节能站</a></span></font></p>
+			<hr></hr>
+			<ul class="load_building" style="margin-top:15px;">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="active">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="active">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>
+			<ul class="load_building">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="active">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>		
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="active">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>	
+			<ul class="load_building">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="active">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>	
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="active">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort" style="margin:35px 0 0 0;">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>		
+			</div><!--savings_month-->			
+		</div><!--savings-->
+		
+<!-- column2 -------------------------------------------------------->		
+
+<style type="text/css">
+.all{height:500px;}
+.sort{float:left;margin:10px 0;}
+.sort_container{}
+/*sort*/
+.savings{float:left;background-color:#fff;}
+.savings li{list-style:none;}
+.savings_month{width:95%;}
+.savings_month p{margin:0 5px;}
+.savings_month strong{font-size:14px;color:#878787;margin-right:15px;}
+.savings_month strong i{font-size:18px;color:#878787;margin:0;}
+.savings_month font{float:right;width:170px;height:19px;}
+.savings_month font span{font-size:12px;margin:0 3%;float:right;}
+.savings_month hr{width:100%;height:1px;margin:5px 0;background-color:#C2C2C2;}
+.savings_month p .active{background-color:#d76618;color:#fff;font-size:14px;font-weight:bold;padding:3px 5px;}
+.sort_container a{text-decoration:none;color:#000;cursor:pointer;}
+.sort_container .active{color:#6FCEF4;}
+.load_building{width:100%;}
+.load_building li{list-style:none;float:right; margin:0 2%;font-size:12px;}
+.month_sort{margin:35px 0 15px 0;}
+.month_sort li{ margin:0 1%;cursor:pointer;height:22px;}
+.month_sort li:hover{background-color:#DAF1FB;}
+.odd{background-color:#FAFAFA;}
+/*sort_end*/
+
+/*info*/
+.info{width:35%;float:left;background-color:#fff;margin:15px 0;}
+.info ul{list-style:none;} 
+.info li{list-style:none;margin:0;} 
+.info_container{width:98%;background-color:#fff;}
+.logo{height:140px;font-size:28px;text-align:center;vertical-align:center;}
+.statistic{margin-top:150px;}
+.statistic p{background-color:#ddd;margin:17px 0;padding:2px 0 2px 4px;font-size:14px;font-weight:bold;color:#676767;}
+.statistic li{float:left;margin:0 10px;}
+.statistic font{font-size:20px;margin:0 5px;}
+/*info_end*/
+
+/*es_sav*/
+.es_sav li{height:60px;float:right;background-color:#fff;margin:0;padding-top:10px;text-align:center;}
+#es_day{}
+#es_month{}
+#es_total{}
+#now{color:#d76618;}
+#last{color:#887766;}
+.es_sav font{font-size:28px;}
+.es_sav p{font-size:12px;margin-top:10px;}
+/*es_sav end*/
+</style>
+
+<div class="all">
+	<div class="sort">
+	<div class="sort_container">
+
+		<div class="savings">
+			<div class="savings_month">
+			<p><strong>月节能量FOOT<i>3</i></strong> <!--foreach($cities)-->
+				<font><span><a class="">所有站点</a></span>
+				<span><a class="">6+1站</a></span>
+				<span><a class="active">节能站</a></span></font></p>
+			<hr></hr>
+			<ul class="load_building" style="margin-top:15px;">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="active">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="active">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>
+			<ul class="load_building">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="active">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>		
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="">60-70A</li>
+				<li class="active">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>	
+			<ul class="load_building">
+				<li class="">彩钢板</li>
+				<li class="active">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="active">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>	
+			<ul class="load_building">
+				<li class="active">彩钢板</li>
+				<li class="">砖墙</li>
+				<li style="margin:0 2%;color:#ccc;">|</li>
+				<li class="active">60-70A</li>
+				<li class="">40-50A</li>
+				<li class="">20-30A</li>
+			</ul>
+			<div class="month_sort" style="margin:35px 0 0 0;">
+			<ul>
+				<li class="odd"></li>
+				<li></li>
+				<li class="odd"></li>
+			</ul>
+			</div>		
+			</div><!--savings_month-->			
+		</div><!--savings-->
+	</div><!--sort_container-->
+	</div><!--sort-->
+<!-- -------------------------------------------------------->	
+<!-- column3 -------------------------------------------------------->	
+	<div class="info">
+		<div class="info_container">
+		<div class="logo">
+			<p>logo</p>
+		</div><!--logo-->	
+		<div class="es_sav">
+			<ul id="now">
+			<li id="es_total"><font>174,535.2</font><p>总节能量</p></li>
+			<li id="es_month" style="border-bottom:0;color:#d76618"><font>54,012.7</font><p>月节能量</p></li>
+			<li id="es_day"><font>2,412.5<font><p>日节能量</p></li>
+			</ul>	
+			<ul id="last">
+			<li id="es_total"><font>30.28%</font><p>上月节能率</p></li>
+			<li id="es_month" style="border-top:0;color:#887766"><font>54,012.7</font><p>上月节能量</p></li>
+			<li id="es_day"><font>2,412.5<font><p>昨日节能量</p></li>
+			</ul>			
+		</div><!--es_sav-->
+		<div class="statistic">
+			<p>项目信息详情</p>
+			<ul><li>基站总数<font>100</font>个</li>
+				<li>节能站<font>89</font>个</li>
+				<li>标准站<font>11</font>个</li></ul>
+		</div><!--statistic-->	
+		</div><!--info_container-->	
+	</div><!--info-->
+	
+</div><!--all-->
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		// stations_type
+		$(".savings_month p a").each(function(){
+			$(this).click(function(){
+				$(".savings_month p a[class='active']").attr("class","");
+				$(this).attr("class","active");
+			});
+		});	
+	});
+</script>
+
+
+
+
+
+
+
+<!--
+<div class="container-fluid">
+
+    <div class="row-fluid">  
+            <div style="background-color:#ccc;height:36px;padding:0;min-width:780px;margin-top:5px; 
+                        border-bottom:4px solid">
+                <div style="text-align:center;padding:0 10px 0 8px;background-color:#333;color:#fff;float:left;margin:0;height:36px;border-top:4px solid <?= $station->isOnline()?"#6c6":"#f44";?>;">
+                    <font style="font-size:18px;line-height:36px;font-weight:bold;"><?= $station->getNameChn() ?></font><br/>
+                </div>
+                <div style="float:left;margin:0;line-height:30px;height:36px;padding:0 8px;">
+                    <?= h_bar_station_type_string($station->getStationType()) ?>
+                    <font class="label"><?= $station->getCity()->getNameChn()?></font>
+                    <?= h_bar_total_load_string($station->getTotalLoad()) ?>
+                    <?= h_bar_building_string($station->getBuilding()) ?>
+                </div>
+                <div style="float:left;margin:0;line-height:36px;height:36px;padding:0 8px;">
+                   室内:<font style="font-size:18px;line-height:36px;font-weight:bold;"><?= $station_info['last_indoor_tmp']?></font>
+                   室外:<font style="font-size:18px;line-height:36px;font-weight:bold;"><?= $station_info['last_outdoor_tmp']?></font>
+                   恒温柜:<font style="font-size:18px;line-height:36px;font-weight:bold;"><?= $station_info['last_box_tmp']?></font>
+                </div>
+                <div style="float:left;margin:0;line-height:30px;height:36px;padding:0 8px;">
+                    <?= h_bar_on_off($station_info['last_fan_0_on']) ?>
+                    <?= h_bar_on_off($station_info['last_colds_0_on'],"colds_0") ?>
+                    <?= h_bar_on_off($station_info['last_colds_1_on'],"colds_1") ?>
+                </div>
+                <ul style="background-color:#333;float:right;margin:0;line-height:36px;height:36px;padding:0 8px;display:block;">
+                    <a href="javascript:void(0)" id="station_detail" style="color:#fff">
+                        打开/收起详细
+                    </a>
+                </ul>
+            </div>
+    </div>
+
+
+<style>
+.detail_box_info{color:#999;float:left;padding:12px;over-flow:hidden;}
+.detail_box_info b{color:#ccc}
+</style>
+
+    <div class="row-fluid">  
+        <div id="station_detail_box" style="display:none;background-color:#333;height:80px;padding:0;min-width:780px">
+            <div class="detail_box_info">
+              <b>风机</b> <?= h_station_fan_type_name_chn($station)?> <br>
+              <b>空调1</b> <?= h_station_colds_type_name_chn($station,0)?> <br>
+              <b>空调2</b> <?= h_station_colds_type_name_chn($station,1)?>
+            </div>
+            <div class="detail_box_info">
+              <b>IP</b> <?= $station->getIp()?> <br>
+              <b>地址</b> <br>
+            </div>
+            <div class="detail_box_info">
+              <b>安培</b> <?= ($station->getStationExt())?($station->getStationExt()->getAmpere()):""?> <br>
+              <b>恒温柜尺寸</b> <?= ($station->getStationExt())?($station->getStationExt()->getBoxSize()):""?> <br>
+            </div>
+        </div>
+    </div>
+
+    
+
+-->
+
+
+
+<script>
+$("#station_detail").click(function () {
+    $(this).css({ });
+    $("#station_detail_box").slideToggle(500,function(){
+        $(this).filter(".middle")
+         .focus();
+        //$("#station_detail").html("基站信息");
+    });
+});
+</script>
+
+

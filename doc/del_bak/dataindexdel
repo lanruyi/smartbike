@@ -1,0 +1,236 @@
+<script>
+$(function(){ 
+        $("#download_xls").click(function(){
+           
+            document.getElementById('filter').action = "/backend/data/xls";
+            document.getElementById('filter').submit();
+        });
+
+        $('.filter select[value!=0],.filter input[value!=""]').css({'background-color':'green','color':'white'}); 
+    });
+</script>
+
+<style>
+.filter{ background-color:#333;color:white;line-height:35px;padding:10px 10px 0 10px;display:none}
+.filter input,select{border:1px solid black}
+.operate{ background-color:#666;color:white;padding:5px 10px;display:none}
+.tab{width:980px;}
+.tab ul{list-style:none;float:left;margin:4px 6px;padding:0}
+.a_active{ background-color:#369;color:#fff };
+</style>
+
+<div class=base_center>
+
+<div style="margin:0;width:100%">
+<font>后台 >> 数据列表</font>
+</div>
+
+    <? if(isset($station) && $station){?>
+        <? $this->load->view("backend/onestation_2",array('station'=>$station))?>
+    <?}?>
+
+<!-------------------------------------------------------------------->
+
+
+
+
+
+<div style="border:1px solid #999;width:988px;padding:5px;margin-bottom:5px">
+   数据显示工具： 
+   <a id="recent_but" href="javascript:void(0)" style="height:30px;test-align:center" class="<?= $show_recent?"a_active":""?>" value="recent">最新60条数据</a> 
+</div>
+
+<div style="border:1px solid #999;width:988px;padding:5px;">
+    <div class="es_day" >按时间日期显示:&nbsp;&nbsp;&nbsp;&nbsp;<input name='time' type="text"  style="width:68px;height:16px"></div>
+    <div class="tab">
+            <? foreach (range(1,24) as $time){?>
+            <ul>    
+                <a class="<?= ($this->input->get('time_hour') == $time)?"a_active":""?>" value='<?= $time?>' href="javascript:void(0)">
+                    <?= h_dt_readable_hour($time-1)?>:00-<?= h_dt_readable_hour($time)?>:00
+                </a>
+            </ul>
+            <?}?>
+    </div>
+    <div style="clear:both"> </div>
+    <div id="more"><b style="cursor:pointer" title="过滤器"><u>数据过滤选项<<</u></b></div>
+</div>
+
+
+
+
+<form id="filter" method="get" action="">
+<div class="es_day"><input name='time' type="hidden"></div>
+<div class='filter'>
+		总&nbsp;&nbsp;电&nbsp;&nbsp;&nbsp;能:<input type="text" class="js_start_energy_main" name="create_start_energy_main" style="width:120px" value="<?= $this->input->get('create_start_energy_main')?>" title=""/> 
+        到:<input type="text" class="js_stop_energy_main" name="create_stop_energy_main" style="width:120px"  value="<?= $this->input->get('create_stop_energy_main')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		dc&nbsp;&nbsp;电&nbsp;&nbsp;&nbsp;能:<input type="text" class="js_start_energy_dc" name="create_start_energy_dc" style="width:120px" value="<?= $this->input->get('create_start_energy_dc')?>" title=""/> 
+        到:<input type="text" class="js_stop_energy_dc" name="create_stop_energy_dc" style="width:120px"  value="<?= $this->input->get('create_stop_energy_dc')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		新&nbsp;&nbsp;&nbsp;风:<?= h_data_switch_on_select("fan_0_on",$this->input->get('fan_0_on')) ?><br />
+		
+		总&nbsp;&nbsp;功&nbsp;&nbsp;&nbsp;率:<input type="text" class="js_start_power_main" name="create_start_power_main" style="width:120px" value="<?= $this->input->get('create_start_power_main')?>" title=""/> 
+        到:<input type="text" class="js_stop_power_main" name="create_stop_power_main" style="width:120px"  value="<?= $this->input->get('create_stop_power_main')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		dc&nbsp;&nbsp;功&nbsp;&nbsp;&nbsp;率:<input type="text" class="js_start_power_dc" name="create_start_power_dc" style="width:120px" value="<?= $this->input->get('create_start_power_dc')?>" title=""/> 
+        到:<input type="text" class="js_stop_power_dc" name="create_stop_power_dc" style="width:120px"  value="<?= $this->input->get('create_stop_power_dc')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		恒温柜:<?= h_data_switch_on_select("colds_box_on",$this->input->get('colds_box_on')) ?><br />
+		
+		室内&nbsp;&nbsp;温度:<input type="text" class="js_start_indoor_tmp" name="create_start_indoor_tmp" style="width:120px" value="<?= $this->input->get('create_start_indoor_tmp')?>" title=""/> 
+        到:<input type="text" class="js_stop_indoor_tmp" name="create_stop_indoor_tmp" style="width:120px"  value="<?= $this->input->get('create_stop_indoor_tmp')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		室外&nbsp;&nbsp;温度:<input type="text" class="js_start_outdoor_tmp" name="create_start_outdoor_tmp" style="width:120px" value="<?= $this->input->get('create_start_outdoor_tmp')?>" title=""/> 
+        到:<input type="text" class="js_stop_outdoor_tmp" name="create_stop_outdoor_tmp" style="width:120px"  value="<?= $this->input->get('create_stop_outdoor_tmp')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		
+		空调&nbsp;1:<?= h_data_switch_on_select("colds_0_on",$this->input->get('colds_0_on')) ?><br />
+		
+		空调1温度:<input type="text" class="js_start_colds_0_tmp" name="create_start_colds_0_tmp" style="width:120px" value="<?= $this->input->get('create_start_colds_0_tmp')?>" title=""/> 
+        到:<input type="text" class="js_stop_colds_0_tmp" name="create_stop_colds_0_tmp" style="width:120px"  value="<?= $this->input->get('create_stop_colds_0_tmp')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		空调2温度:<input type="text" class="js_start_colds_1_tmp" name="create_start_colds_1_tmp" style="width:120px" value="<?= $this->input->get('create_start_colds_1_tmp')?>" title=""/> 
+        到:<input type="text" class="js_stop_colds_1_tmp" name="create_stop_colds_1_tmp" style="width:120px"  value="<?= $this->input->get('create_stop_colds_1_tmp')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		空调&nbsp;2:<?= h_data_switch_on_select("colds_1_on",$this->input->get('colds_1_on')) ?><br />
+		
+		恒&nbsp;&nbsp;温&nbsp;&nbsp;&nbsp;柜:<input type="text" class="js_start_box_tmp" name="create_start_box_tmp" style="width:120px" value="<?= $this->input->get('create_start_box_tmp')?>" title=""/> 
+        到:<input type="text" class="js_stop_box_tmp" name="create_stop_box_tmp" style="width:120px"  value="<?= $this->input->get('create_stop_box_tmp')?>" title=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        		
+</div>
+
+<div class='operate'>
+		<input type='hidden' name=station_id value=<?= $station['id']?> />
+		<button type="submit" class="btn btn-primary">确定查询</button> 
+        <a href="/backend/data?station_id=<?= $this->input->get('station_id')?>" class="btn btn-primary">清除查询</a>
+</div>
+</form>
+
+<hr style="border-top:1px solid #333; border-bottom:1px solid #333;" />
+
+<!-------------------------------------------------------------------->
+<script type="text/javascript">
+	$("#more").click(function(){
+		$('.filter').slideToggle('fast');
+		$('.operate').slideToggle('fast');
+	});
+</script>
+
+<!-------------------------------------------------------------------->
+<style>
+
+
+.datalist{ border:1px solid #999; background-color:#fff; font-size:12px; width:100%; }
+.datalist th{ border:1px solid #666;color:#fff;background-color:#999; font-weight:bold; padding:2px; text-align:center; }
+.datalist td{ border:1px solid #666;padding:2px; text-align:center; }
+
+.datalist tr{ background: #fff;} 
+.datalist tr:nth-child(2n){ background: #ddd; } 
+
+
+.datalist td.name_alive{ background: #6f6 }
+.datalist td.fan_on_0{  }
+.datalist td.fan_on_1{ background: #0f0; }
+.datalist td.colds_0_on_0{  }
+.datalist td.colds_0_on_1{ background: #f93; }
+.datalist td.colds_1_on_0{  }
+.datalist td.colds_1_on_1{ background: #9dd; }
+
+.datalist .leftline{ border-left: 2px solid #444; }
+.datalist .rightline{ border-right: 2px solid #444; }
+</style>
+
+<table class="datalist" >
+<tr>
+<th> <b></b> </td>
+<th colspan=8 class="leftline"> <b>温度</b> </td>
+<th colspan=2 class="leftline"> <b>湿度</b> </td>
+<th colspan=4 class="leftline"> <b>开关</b> </td>
+<th colspan=2 class="leftline"> <b>电能</b> </td>
+<th colspan=2 class="leftline rightline"> <b>功率</b> </td>
+<th> <b></b> </td>
+</tr>
+<tr>
+<th > <b>基站</b> </td>
+<th class="leftline"> <b>室内</b> </td>
+<th> <b>室外</b> </td>
+<th> <b>室外<br>真实</b> </td>
+<th> <b>空调1</b> </td>
+<th> <b>空调2</b> </td>
+<th> <b>恒温</b> </td>
+<th> <b>恒温1</b> </td>
+<th> <b>恒温2</b> </td>
+<th class="leftline"> <b>内</b> </td>
+<th > <b>外</b> </td>
+<th class="leftline"> <b>风</b> </td>
+<th> <b>空1</b> </td>
+<th> <b>空2</b> </td>
+<th> <b>恒</b> </td>
+<th class="leftline"> <b>总</b> </td>
+<th> <b>dc</b> </td>
+<th class="leftline"> <b>总</b> </td>
+<th> <b>dc</b> </td>
+<th class="leftline"> <b>采样时间</b> </td>
+</tr>
+<?php foreach ($datas as $data): ?>
+<tr>
+<td class="rightline"> <?= $data['station_name_chn']?>  </td>
+<td > <?= $data['indoor_tmp']?>  </td>
+<td> <?= $data['outdoor_tmp']?>  </td>
+<td> <?= $data['true_out_tmp']?>  </td>
+<td> <?= $data['colds_0_tmp']?>  </td>
+<td> <?= $data['colds_1_tmp']?>  </td>
+<td> <?= $data['box_tmp']?>  </td>
+<td> <?= $data['box_tmp_1']?>  </td>
+<td> <?= $data['box_tmp_2']?>  </td>
+
+<td class="leftline"> <?= $data['indoor_hum']?>  </td>
+<td class="rightline"> <?= $data['outdoor_hum']?>  </td>
+<td class="fan_on_<?= $data['fan_0_on']?>">       <?= $data['fan_0_on']?>   </td>
+<td class="colds_0_on_<?= $data['colds_0_on']?>"> <?= $data['colds_0_on']?> </td>
+<td class="colds_1_on_<?= $data['colds_1_on']?>"> <?= $data['colds_1_on']?> </td>
+<td > <?= $data['colds_box_on']?>  </td>
+<td class="leftline"> <?= $data['energy_main']?>  </td>
+<td> <?= $data['energy_dc']?>  </td>
+<td class="leftline"> <?= $data['power_main']?>  </td>
+<td> <?= $data['power_dc']?>  </td>
+
+<td class="leftline <?= h_compare_dur($data['create_time'],"",10)?"name_alive":"" ?>" style="width:130px"> 
+    <?= $data['create_time']?>  
+</td>
+</tr>
+<?php endforeach?>
+</table>
+
+</div>
+<script type="text/javascript" src="/static/site/js/frontend_basic.js?id=<?= hsid()?>"></script>
+<script type="text/javascript" src="/static/site/js/frontend_day.js?id=<?= hsid()?>"></script>
+<script type="text/javascript">
+	window.global_options = {
+        "station_id": "<?= $station['id'] ?>",
+        "day_offset": "0",
+        "time": "<?= $time_disp?>"
+        }
+
+	$(document).ready(function(){
+
+    $('.es_day input').datepicker({
+        showButtonPanel: true,
+        dateFormat: "yy-mm-dd",
+        inline: false,
+        timezone: '+8000',
+        defaultDate: '+7d', 
+        onClose:function(datatimeText,instance){
+        window.global_options.time = $('.es_day input').attr("value");
+        window.location.href="?station_id="+window.global_options.station_id+"&time="+window.global_options.time;
+        }
+    });
+    $('.es_day input').attr("value",window.global_options.time);
+	$('.tab ul a').click(function(){
+		window.location.href = '/backend/data?station_id='+window.global_options.station_id+'&time='+window.global_options.time+'&time_hour='+$(this).attr('value');
+	});
+	$('#recent_but').click(function(){
+		window.location.href = '/backend/data?station_id='+window.global_options.station_id+'&show='+$(this).attr('value');
+	});
+
+});
+</script>

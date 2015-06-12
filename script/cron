@@ -1,0 +1,22 @@
+#早上6点开始算fixdata -> daydata -> monthdata
+10 0   * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake fixdata go_0010 
+0  6   * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake fixdata go_0600 
+#45 0   * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake t_fandaydata one_day
+
+0    1 * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake bug go_bugs_day
+*/10 * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake bug go_bugs_10
+*/20 * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake bug bugs_temp_high_reboot
+
+55 23  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period go_switch_nplus1_sql
+50 23  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period checkDatatables
+0  12  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period go_get_city_weather
+7  *  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period set_aging_cmd
+8  *  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period overTimeCommand 
+0  0  * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period make_all_esg_fixed
+
+#*/1  * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake temp open_close_fan_test_zhenhua 
+#*/5  * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake temp update_rom_test_chuanqi   
+#*/5  * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake temp rebootStation     
+#*/10 * * * * /usr/local/php/bin/php /home/wwwroot/esproject/cli.php rake period go_send_mails
+
+

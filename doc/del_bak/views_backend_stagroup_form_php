@@ -1,0 +1,60 @@
+<div class="span10 content">
+
+<?php 
+$attributes = array("class"=>"add_stagroup");
+$hidden = array();
+
+if($mod){
+    echo form_open("/backend/stagroup/update_post",$attributes,$hidden); 
+}else{
+    echo form_open("/backend/stagroup/insert_post",$attributes); 
+}
+?>
+
+<?php if($mod){?>
+    <ul>id:<input type="text" name="id" value="<?= $stagroup->getId()?>" readonly="readonly" /> </ul>
+<?php }?>
+
+    <ul>name_chn: <input type="text" name="name_chn" value="<?= $mod? $stagroup->getNamechn():"" ?>" /> </ul>
+    <ul>count: <input type="text" name="count" value="<?= $mod? $stagroup->getCount():"" ?>" /> </ul>
+    <ul>type: <input type="text" name="type" value="<?= $mod? $stagroup->getType():"" ?>" /> </ul>
+    <ul>
+    
+<?php if($mod){
+    $station_group = array();
+    foreach ($stagroup->getStations() as $station){
+        array_push($station_group,$station);
+    }
+}?>
+
+    
+    <? foreach($areas as $area){?>
+        <?= $area->getNamechn();?><br><hr>
+        <? foreach($area->getStations() as $station){?>
+            <input type="checkbox" name="station_ids[]" value="<?= $station->getId();?>" <?= $mod&&in_array($station,$station_group)?"checked":"" ?>> 
+        <?= $station->getNamechn();?>
+        <?}?>
+            <br>
+    <?}?>
+
+        没有城市<br><hr>
+        <? foreach($no_city_stations as $station){?>
+            <input type="checkbox" name="station_ids[]" value="<?= $station->getId();?>" <?= $mod&&in_array($station,$station_group)?"checked":"" ?>> 
+        <?= $station->getNamechn();?>
+        <?}?>
+        <br>
+
+    </ul>
+    <ul><?php echo form_submit("","submit"); ?> </ul>
+    
+
+<?php echo form_close(); ?>
+
+<?php if($mod){?>
+<a href="#">mod</a>
+<?php }else{?>
+<a href="#">add</a>
+<?php }?>
+<a href="/backend/stagroup">back</a>
+
+</div>

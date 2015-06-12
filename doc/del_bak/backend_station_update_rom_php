@@ -1,0 +1,74 @@
+<style>
+    .ur_finish{color:#999}
+    .ur_ing{color:#000; font-weight:bold;}
+    .ur_wait{color:#aaa;}
+    .title{margin:20px;padding:0px 20px 0px 0px;font-size:20px}
+
+</style>
+<div class=row-fluid>
+<div class="span12">
+<div class="base_center">
+<div class="title">
+<?= $station->getNameChn() ?> 固件更新
+</div>
+<hr>
+<div>
+    <div class="ur_<?= get_process_status_css(0,$status)?>"><?= get_process_status_icon(0,$status)?>正常状态 无更新请求 </div>
+    <div class="ur_<?= get_process_status_css(1,$status)?>"><?= get_process_status_icon(1,$status)?>已发送更新请求 等待开发板响应</div>
+    <div class="ur_<?= get_process_status_css(2,$status)?>"><?= get_process_status_icon(2,$status)?>更新中 正在下载</div>
+    <div class="ur_<?= get_process_status_css(3,$status)?>"><?= get_process_status_icon(3,$status)?>更新下载完毕 等待测试结果</div>
+    <div class="ur_<?= get_process_status_css(4,$status)?>"><?= get_process_status_icon(4,$status)?>确认完毕</div>
+</div>
+<a href="/backend/station/reset_update_rom/<?= $station->getId()?>" class="btn btn-primary"> 重置更新流程 </a>（重置后 如仍有命令 请<a href="/backend/command">手动删除</a>对应命令）
+
+<br>
+<br>
+
+<div>
+    当前固件：
+</div>
+
+<div>
+
+<?if($status === 0):?>
+<?php
+    $hidden = array('station_id' => $station->getId());
+    echo form_open("/backend/station/start_update_rom",null,$hidden); 
+?>
+请选择rom: 
+<select id='rom_id_select' name="new_rom_id">
+    <? foreach ($roms as $rom):?>
+        <option value="<?= $rom->getId()?>">Name:<?= $rom->getName()?> Size:<?= $rom->getSize()?></option>
+    <? endforeach ?>
+</select>
+<?= form_submit("","提交"); ?> 
+<? endif ?>
+
+<?if($status === 1):?>
+    即将更新固件：<?= $new_rom->getName() ?><br>
+    等待ESG智能网关接受命令... (此过程1分钟左右)
+<? endif ?>
+
+
+<?if($status === 2):?>
+    正在更新固件：<?= $new_rom->getName() ?><br>
+    固件更新进度：<?= $station->getCurrentPartId()+1?>/<?= $this->rom->partNum($new_rom)?>
+    <div class="progress progress-striped active" style="width:250px">
+    <div class="bar" style="width: <?= ($station->getCurrentPartId()+1)*100/$this->rom->partNum($new_rom) ?>%;"></div>
+    </div>
+    
+<? endif ?>
+
+<?if($status === 3):?>
+    即将更新固件：<?= $new_rom->getName() ?><br>
+    现在起有20分钟的缓存时间 请通过数据查看ESG是否正常工作<br> 
+    若确定正常工作 请按确认更新按钮<br>
+    <a href="/backend/station/confirm_update_rom/<?= $station->getId()?>" class="btn btn-primary"> 确认更新 </a>
+<? endif ?>
+
+<?if($status === 4):?>
+    已发出确认消息，等待客户端完成响应。
+<? endif ?>
+</div>
+</div>
+</div>

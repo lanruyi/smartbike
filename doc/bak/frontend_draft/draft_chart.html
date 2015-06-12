@@ -1,0 +1,321 @@
+﻿
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<title>air-borne chart - OSS能管云 前端</title>
+
+<meta name="robots" content="no-cache" />
+<meta name="description" content="Energy Saving" />
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/static/bootstrap/patch/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/static/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+  </head>
+
+
+        <link type="text/css" href="/static/jquery/smoothness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/static/jquery/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/static/jquery/jquery-ui-1.8.18.custom.min.js"></script>
+		<script type="text/javascript" src="/static/jquery/ex/jquery-ui-timepicker-addon.js"></script>
+        
+
+<body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/site/img/green_cloud.png" style="height:15px;padding:0;margin:0"/> 节能云 </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <!-- <li class="active"><a href="/station"> station </a></li> -->
+              <li><a href="/frontend/frontend_chart"> 图表 </a> </li>
+              <li><a href="/frontend/frontend_map"> 地图 </a> </li>
+              <li><a href="/frontend/frontend_report"> 分析报表 </a> </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<div class="container">
+
+
+﻿<style type="text/css">
+            /* css for datepicker */
+            #ui-datepicker-div, .ui-datepicker{ font-size: 90%; margin:0px;}
+
+            /* css for timepicker */
+            .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+            .ui-timepicker-div dl { text-align: left; text-indent: 5px;}
+            .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+            .ui-timepicker-div dl dd { margin: 0 10px 10px 45px; }
+            .ui-timepicker-div td { font-size: 90%; }
+            .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+   </style>
+
+
+
+
+    <div class="row">
+
+
+        <div class="span5"> 
+        <div style="width:480px"> 
+
+            <div style="float:left;margin-right:12px;"> 
+            <a data-toggle="modal" href="#time_Modal" class="btn btn-primary btn-large" id="es_time_modal_button">请选择时间</a>
+
+            <div id="time_Modal" class="modal hide" style="top: auto; left: auto; margin: 0 auto; width:680px">
+                <div class="modal-header">
+                  <a class="close" data-dismiss="modal">×</a>
+                  <h3>显示时间选择</h3>
+                </div>
+                <div class="modal-body"  style="height:auto;">
+                  <div id="es_time_title" style="background-color:#39f;width:645px;text-align:center;line-height:30px;"> &nbsp;此处显示选择的时间&nbsp;</div>
+                  <div id="es_time_simple" style="float:left;background-color:#39f;width:100px;display:block;height:auto;text-align:center">
+                      <div style="height:4px"></div>
+                      <div style="width:100px;float:left" data-toggle="buttons-radio" id=es_last>
+                        <button style="width:90px;margin-bottom:4px" class="btn active" value="3_hours">最近3小时</button>
+                        <button style="width:90px;margin-bottom:4px" class="btn" value="1_day">最近1天</button>
+                        <button style="width:90px;margin-bottom:4px" class="btn" value="7_days">最近1周</button>
+                        <button style="width:90px;margin-bottom:4px" class="btn" value="1_month">最近1个月</button>
+                        <button style="width:90px;margin-bottom:4px" class="btn" value="3_months">最近1季度</button>
+                        <button style="width:90px;margin-bottom:4px" class="btn" value="1_year">最近1年</button>
+                      </div>
+                  </div>
+                  <div id="es_time_complex" style="float:left;background-color:#fff;width:545px;display:block;height:auto;text-align:center">
+                      <div style="height:4px"></div>
+                      <div style="width:66px;float:left;" data-toggle="buttons-radio" id=es_dur>
+                        <button style="width:60px;margin-bottom:4px" class="btn active" value="3_hours">3小时</button>
+                        <button style="width:60px;margin-bottom:4px" class="btn" value="1_day">1天</button>
+                        <button style="width:60px;margin-bottom:4px" class="btn" value="7_days">1周</button>
+                        <button style="width:60px;margin-bottom:4px" class="btn" value="1_month">1个月</button>
+                        <button style="width:60px;margin-bottom:4px" class="btn" value="3_months">1季度</button>
+                        <button style="width:60px;margin-bottom:4px" class="btn" value="1_year">1年</button>
+                      </div>
+                      <div style="width:60px;float:left" data-toggle="buttons-radio" id=es_type>
+                        <button style="width:50px;margin-bottom:4px" class="btn active" value="end">止于</button>
+                        <button style="width:50px;margin-bottom:4px" class="btn" value="around">附近</button>
+                        <button style="width:50px;margin-bottom:4px" class="btn" value="start">始于</button>
+                      </div>
+                      <div style="float:left; margin:0 3px 4px 0" id="es_date_picker"></div>
+                      <div style="float:left;" id="es_time_picker"></div>
+                   </div>
+                </div>
+                <div class="modal-footer">
+                  <a href="#" data-dismiss="modal" class="btn btn-primary" id="es_refresh_chart">刷新图表</a>
+                </div>
+            </div><!--time_Modal-->
+            </div>
+
+
+
+            <div style="float:left;"> 
+            <div class="btn-group">
+                <button class="btn btn-primary btn-large">测试站点1</button>
+                <button class="btn btn-primary btn-large dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <!-- dropdown menu links -->
+                    <li><a href="#">测试站点1</a></li>
+                    <li><a href="#">测试站点1</a></li>
+                    <li><a href="#">测试站点1</a></li>
+                </ul>
+            </div>
+            </div>
+            </div>
+
+        </div><!--span2-->
+    </div><!--row-->
+
+
+    <div class="row"> <!--chart row 1--> 
+        <div class="span12"> &nbsp; </div>
+        <div class="span7">
+            <div class="chart" id="es_temprature"></div>
+        </div>
+        <div class="span5">
+            <div class="chart" id="es_temprature_test"></div>
+        </div>
+        <div> &nbsp; </div>
+        <div class="span5">
+            <div class="chart" id="es_temprature_test_2"></div>
+        </div>
+
+    </div><!--chart row 1-->
+
+
+
+		<script type="text/javascript" src="js/frontend_chart_basic.js"></script>
+		<script type="text/javascript">
+		// Json struct for different params. Initial: current_time, last 3_hours
+			window.global_options = {
+				"station_id": "1",
+				"dur": "3_hours",
+				"type": "last",
+				"time": "",
+            }
+			window.display_options = {
+				"station_id": 0,
+				"dur": "",
+				"type": "",
+                "es_date_picker": "",
+                "es_time_picker": ""
+            }
+            
+
+
+            $(document).ready(function(){
+                
+                $('#es_date_picker').datepicker({
+                    dateFormat: "yymmdd",
+                    inline: true,
+                    timezone: '+8000',
+                    onSelect: function(datetimeText, instance){
+                        //window.display_options.es_date_picker = datetimeText;
+                    }
+                });
+                $('#es_time_picker').timepicker({
+                    showTime:false,
+                    timeFormat: "hhmmss",
+                    showButtonPanel: false,
+                    inline: true,
+                    timezone: '+8000',
+                    hourGrid: 4,
+                    minuteGrid: 10,
+                    onSelect: function(datetimeText, instance){
+                        //window.display_options.es_time_picker = datetimeText;
+                    }
+                });
+                var _now = new Date();
+                $('#es_date_picker').datepicker('setDate',_now);//
+                $('#es_time_picker').timepicker('setTime',_now);//
+
+                set_display_options_from_global();
+
+                
+                if(window.display_options.type === "last")
+                {
+                    set_es_last(window.display_options.dur);
+                    $("#es_time_simple").css({"background-color":"#39f"});   
+                    $("#es_time_complex").css({"background-color":"#fff"});   
+                }else{
+                    set_es_type(window.display_options.type);
+                    set_es_dur(display_options.dur);
+                    $('#es_date_picker').datepicker( "setDate" , display_options.es_date_picker );//.datepicker // 设定日期 = global_options.es_date_picker
+                    $('#es_time_picker').timepicker( "setTime" , display_options.es_time_picker );//.timepicker // 设定时间 = global_options.es_time_picker
+                    $("#es_time_complex").css({"background-color":"#39f"});   
+                    $("#es_time_simple").css({"background-color":"#fff"});   
+                }
+                
+                $("#es_time_modal_button").html(generate_time_str_for_button_from_display_options());
+
+                //todo: 点完 刷新图表 按钮 更新global_options
+                $("#es_refresh_chart").click(function(){
+                    if(window.display_options.type === "last")
+                    {
+                      display_options.dur = get_es_last();
+                    }else{
+                        window.display_options.es_date_picker = new Date($('#es_date_picker').datepicker( "getDate")).format("yyyyMMdd");
+                        window.display_options.es_time_picker = new Date($('#es_time_picker').datepicker( "getDate")).format("hhmmss");
+                      display_options.dur = get_es_dur();
+                      display_options.type = get_es_type(); 
+                    }
+                    $("#es_time_modal_button").html(generate_time_str_for_button_from_display_options());
+                    set_global_options_from_display();
+                    get_data_and_refresh_chart();
+                })
+
+                $("#es_time_simple").click(function(){
+                  display_options.type = "last"; 
+                  $("#es_time_simple").css({"background-color":"#39f"});   
+                  $("#es_time_complex").css({"background-color":"#fff"});   
+                })
+
+                $("#es_time_complex").click(function(){
+                  display_options.type = "end"; 
+                  $("#es_time_complex").css({"background-color":"#39f"});   
+                  $("#es_time_simple").css({"background-color":"#fff"});   
+                })
+
+				init_highcharts();
+                draw_chart("es_temprature");
+
+                // get_data_and_refresh_chart("es_temprature");
+                setInterval(function(){
+                    if(window.global_options.type === "last"){ 
+                        get_data_and_refresh_chart("es_temprature");
+                    }
+                },1000*5);
+
+
+			});
+
+
+		</script>
+        
+<script src="/static/hicharts/highcharts.js"></script>
+<script src="/static/hicharts/modules/exporting.js"></script>
+
+
+
+
+<div class="row footer">
+<div class="span12 footer">
+<hr>
+<footer>
+    <p><strong> &copy; 2011 Designed by Xiang </strong></p>
+</footer>
+</div><!--span12 footer-->
+</div><!--row footer-->
+</div><!--contaner-->
+</body>
+
+
+
+
+    <script src="/static/bootstrap/js/google-code-prettify/prettify.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-alert.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-button.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="/static/bootstrap/js/application.js"></script>
+
+</html>

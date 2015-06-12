@@ -1,0 +1,170 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+//节能公式
+define('ESC_SAV_STD_FUN_A', 1);
+define('ESC_SAV_STD_FUN_B', 2);
+
+//错误类型
+define('ESC_ERROR_NO_STD_STATION_FOUND', 1);
+define('ESC_ERROR_NO_SAV_STATION_FOUND', 2);
+define('ESC_ERROR_NO_STD_CSPT_FOUND', 3);
+define('ESC_ERROR_NO_SAV_CSPT_FOUND', 4);
+
+define('ESC_ERROR_NO_STD_LOAD_NUM_FOUND', 5);
+define('ESC_ERROR_NO_SAV_LOAD_NUM_FOUND', 6);
+define('ESC_ERROR_NO_SAV_DC_ENERGY_FOUND',7);
+define('ESC_ERROR_NO_STD_DC_ENERGY_FOUND',8);
+define('ESC_ERROR_NO_CSPT_FOUND', 9);
+define('ESC_ERROR_STATION_CSPT_FAULT',10);
+
+define('ESC_ERROR_STD_DAY_DATA',20);
+define('ESC_ERROR_NO_STD_DAY_FOUND',21);
+define('ESC_ERROR_NO_DAYDATA_FOUND',22); 
+define('ESC_ERROR_NO_MONTHDATA_FOUND',23);
+define('ESC_ERROR_NO_STATION_FOUND',24);
+
+define('ESC_ERROR_NO_SAVPAIR_RATE_FOUND',30);
+
+define('ESC_NO_LOADLEVELDATA_FOUND',40);
+define('ESC_NO_SAVING_RATE_FOUND',41);
+//警告类型
+define('ESC_WARNING_SOME_SAVPAIR_RATE_FAILED',31);
+
+class Saving extends ES_Model {
+
+    public function __construct() {
+        $this->table_name = "savings";
+        $this->load->model(array('daydata','monthdata'));
+    }
+    
+    public function paramFormat($_params){
+        $_params['station_id']       = isset($_params['station_id'])      ? $_params['station_id']      : 0;
+        $_params['datetime']         = isset($_params['datetime'])        ? $_params['datetime']        : 0;
+        $_params['project_id']       = isset($_params['project_id'])      ? $_params['project_id']      : 0;
+        $_params['city_id']          = isset($_params['city_id'])         ? $_params['city_id']         : 0;
+        $_params['building_type']    = isset($_params['building_type'])   ? $_params['building_type']   : 0;
+        $_params['total_load']       = isset($_params['total_load'])      ? $_params['total_load']      : 0;
+        $_params['station_type']     = isset($_params['station_type'])    ? $_params['station_type']    : 0;
+        $_params['time_type']        = isset($_params['time_type'])       ? $_params['time_type']       : 0;
+        $_params['saving_rate']      = isset($_params['rate'])            ? $_params['rate']            : null;
+        $_params['energy_save']      = isset($_params['energy_save'])     ? $_params['energy_save']     : null;
+        $_params['saving_func']      = isset($_params['saving_func'])     ? $_params['saving_func']     : 0;
+        $_params['error']            = isset($_params['error'])           ? $_params['error']           : null;
+        $_params['warning']          = isset($_params['warning'])         ? $_params['warning']         : null;
+        return $_params;     
+    }
+     public function insert($_params){
+        return parent::new_sql($this->paramFormat($_params));
+    }
+    
+    public function insert_array($params_array){
+        $_insert_array = array(); 
+        foreach($params_array as $params){
+           array_push($_insert_array,$this->paramFormat($params));  
+        }
+        $this->db->insert_batch("savings",$_insert_array);
+    }
+    
+    public function delSomeSavingDatas($conditions){
+        $begin_datetime = h_dt_start_time_of_month($conditions['datetime']);
+        $end_datetime = h_dt_stop_time_of_month($conditions['datetime']);
+        $tmp = $begin_datetime;
+        while (h_dt_compare($end_datetime, $tmp)) {
+            $conditions['datetime'] = $tmp;
+            $this->delBy($conditions);
+            $tmp = h_dt_add_day($tmp, 1);
+        }
+    }
+    
+    public function initSavingDatas($conditions,$saving_funcs){
+        $begin_datetime = h_dt_start_time_of_month($conditions['datetime']);
+        $end_datetime = h_dt_stop_time_of_month($conditions['datetime']);
+        
+        $stations = $this->station->findBy_sql(array("project_id"=>$conditions['project_id'],
+            "city_id"=>$conditions['city_id'],'building'=>$conditions['building_type'],'recycle'=>ESC_NORMAL,'create_time <'=>$begin_datetime));
+        
+        $savingdata_array = array();
+        $savingdata['project_id'] = $conditions['project_id'];
+        $savingdata['city_id'] = $conditions['city_id'];
+        $savingdata['building_type'] = $conditions['building_type']; 
+        foreach($stations as $station){
+            $savingdata['station_id'] = $station['id'];
+            $savingdata['total_load'] = $station['total_load'];
+            $savingdata['station_type'] = $station['station_type'];
+            foreach($saving_funcs as $saving_func){
+                $savingdata['datetime'] = $conditions['datetime'];
+                $savingdata['time_type'] = ESC_MONTH;
+                $savingdata['saving_func'] = $saving_func;
+                array_push($savingdata_array,$savingdata);
+                $savingdata['time_type'] = ESC_DAY;
+                $tmp = $begin_datetime;
+                while (h_dt_compare($end_datetime, $tmp)) {
+                    $savingdata['datetime'] = $tmp;
+                    array_push($savingdata_array, $savingdata);
+                    $tmp = h_dt_add_day($tmp, 1);
+                }
+            } 
+         }
+         $this->insert_array($savingdata_array);
+    }
+    //for 江苏联通
+    public function calcEnergySave($saving_rate,$station_cspt){
+        $energy_save = null;
+        if($saving_rate>=1){
+            return;
+        }
+        $energy_save = round($station_cspt*$saving_rate/(1-$saving_rate),2);
+        return $energy_save;
+        }
+    
+        
+    public function getEnergySave($station_id,$time,$time_type,$saving_func){
+        $saving = $this->findOneBy_sql(array("station_id"=>$station_id,"datetime"=>$time,"time_type"=>$time_type,"saving_func"=>$saving_func));
+        return $saving['energy_save'];
+    }
+    
+    public function getStationSavingRate($station_id,$time,$time_type,$saving_func){
+        $station = $this->findOneBy_sql(array("station_id"=>$station_id,"datetime"=>$time,"time_type"=>$time_type,"saving_func"=>$saving_func));
+        return $station['saving_rate'];
+    }
+    
+    public function getOneKindStationNum($station_type,$conditions){
+        $this->db->where($conditions);
+        $this->db->where("station_type",$station_type);
+        $this->db->select('count(*) as num');
+        $query = $this->db->get('savings');
+        $res = $query->row_array();
+       
+        return $res['num'];
+    }
+    
+    public function getOneKindStationEnergySave($station_type,$conditions){
+        $this->db->where($conditions);
+        $this->db->where("station_type",$station_type);
+        $this->db->select_sum('energy_save');
+        $query = $this->db->get('savings');
+        $res = $query->row_array();
+        
+        return $res['energy_save'];
+    }
+    
+    public function getStationEnergyCspt($station_id,$time,$time_type){
+        if(ESC_DAY==$time_type){
+            $daymonthdata = $this->daydata->findStationDaydata($station_id, $time);
+        }elseif(ESC_MONTH){
+            $daymonthdata = $this->monthdata->findStationMonthdata($station_id,$time);
+        }
+        return $daymonthdata['main_energy'];
+    }
+    public function getSavingAvgData($savingdata){
+       $query = $this->db->query("select avg(energy_save) as energy_save from savings
+                    where project_id=? and city_id=? and building_type=? and station_type=? and 
+                    datetime=? and time_type=? and saving_func=? and total_load=?",
+                        array($savingdata['project_id'],$savingdata['city_id'],$savingdata['building_type'],
+                            $savingdata['station_type'],$savingdata['datetime'],$savingdata['time_type'],
+                            $savingdata['saving_func'],$savingdata['total_load']));
+       $avg_info = $query->row_array();
+       return $avg_info;
+    }
+}
+?>

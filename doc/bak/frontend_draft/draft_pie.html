@@ -1,0 +1,123 @@
+
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Power_pie</title>
+
+		<script type="text/javascript" src="/static/jquery/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript">
+$(function () {
+    var chart;
+    $(document).ready(function() {
+    
+        // var colors = Highcharts.getOptions().colors,
+        var colors = ['#007788','#f2f2f2'],
+            categories = ['标准站总能耗','测试站总能耗'],
+            name = '总能耗',
+            data = [{
+                    y: 60,
+                    // color: colors[0],
+                    color: '#fff',
+                    drilldown: {
+                        name: '标准站',
+                        categories: ['标准站空调能耗', '标准站其他能耗'],
+                        data: [45, 15],
+                        color: colors[0]
+                    }
+                }, {
+                    y: 40,
+                    // color: colors[1],
+                    color: '#fff',
+                    drilldown: {
+                        name: '测试站',
+                        categories: ['测试站空调能耗', '测试站其他能耗'],
+                        data: [30,10],
+                        color: colors[1]
+                    }
+                }];
+    
+    
+        // Build the data arrays
+        var browserData = [];
+        var versionsData = [];
+        for (var i = 0; i < data.length; i++) {
+    
+            // add browser data
+            browserData.push({
+                name: categories[i],
+                y: data[i].y,
+                color: data[i].color
+            });
+    
+            // add version data
+            for (var j = 0; j < data[i].drilldown.data.length; j++) {
+                // var brightness = 0.2 - (j / data[i].drilldown.data.length) / 5 ;
+                versionsData.push({
+                    name: data[i].drilldown.categories[j],
+                    y: data[i].drilldown.data[j],
+                    // color: Highcharts.Color(data[i].color).brighten(brightness).get()
+                    color: data[i].drilldown.color
+                });
+            }
+        }
+    
+        // Create the chart
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                type: 'pie'
+            },
+            title: {
+                text: '标准站与测试站能耗对比',
+                style: {
+                	fontSize: 12,
+                	fontWeight: 'bold'
+                }
+            },
+            plotOptions: {
+                pie: {
+                	allowPointSelect: true,
+                	cursor: 'pointer',
+                    shadow: true,
+                    size: '90%',
+                    dataLabels: {
+                    	enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+                }
+            },
+            legend: {
+            	layout: 'vertical'
+            },
+            series: [{
+                name: 'Versions',
+                data: versionsData,
+                innerSize: '55%',
+                showInLegend: true
+                // dataLabels: {
+                	// enabled: false,
+                    // formatter: function() {
+                        // // display only if larger than 1
+                        // return this.y > 1 ? '<b>'+ this.point.name +':</b> '+ this.y +'%'  : null;
+                    // }
+                // }
+            }]
+        });
+    });
+    
+});
+		</script>
+	</head>
+	<body>
+<script src="highcharts/highcharts.js"></script>
+
+<!-- <script src="highcharts/modules/exporting.src.js"></script> -->
+
+<div id="container" style="min-width: 300px; height: 300px; margin: 0 auto"></div>
+	</body>
+</html>

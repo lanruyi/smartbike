@@ -1,0 +1,63 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Statistics_controller extends Backend_Controller {
+	
+	function __construct() {
+		parent::__construct ();
+		$this->load->model(array('mid/mid_station','station','statistics','area','user','esg' ) );
+		$this->load->helper(array('statistics') );
+		$this->load->library(array('curl', 'pagination' ) );
+	}
+	
+	public function index($cur_page = 1) {
+        $data['title'] = "统计数据";
+        $data['backurlstr'] = urlencode($_SERVER["REQUEST_URI"]);
+
+        if($this->input->get('station_id')){
+            $data['station'] = $this->mid_station->onestation_detail($this->input->get('station_id'));
+        }else{
+            $data['station'] = null; 
+        }
+
+        $per_page = $this->input->get('per_page')? $this->input->get('per_page'):20;
+        $conditions = array();
+        $conditions['station_id = '] = $data['station']['id'];
+        $conditions['type ='] = $this->input->get('type');
+        $conditions['packets <='] = $this->input->get('packets');
+        $conditions['time >='] = $this->input->get('start_time');
+        $conditions['time <='] = $this->input->get('stop_time');
+         
+        $orders = array("id"=>"desc");
+        $paginator =  $this->statistics->pagination_sql($conditions,$orders,$per_page,$cur_page);		
+        //config pagination
+        $config['base_url'] = '/backend/statistics/index/';
+        $config['suffix'] = "?".$_SERVER['QUERY_STRING'];
+        $config['first_url'] = $config['base_url'].$config['suffix'];
+	    $config['total_rows'] = $paginator['num'];
+	    $config['per_page'] = $per_page; 
+		
+        $this->pagination->initialize($config); 
+        $data['pagination'] = $this->pagination->create_links();
+        $data['statisticses'] = $paginator['res'];
+        foreach($data['statisticses'] as &$statistics){
+            $station = $this->station->find_sql($statistics['station_id']);
+            $statistics['station_name_chn'] = $station?$station['name_chn']:""; 
+        }
+        
+        		
+	$this->load->view ( 'templates/backend_header', $data );
+	$this->load->view ( 'backend/menu');
+	$this->load->view ( 'backend/statistics/index');
+	$this->load->view ( 'templates/backend_footer');
+	$this->output->enable_profiler ( $this->input->get ( 'debug' ) );
+	
+	}
+
+}
+
+
+
+
+
+
+

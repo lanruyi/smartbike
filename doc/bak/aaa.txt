@@ -1,0 +1,126 @@
+
+ public function xls(){
+        $conditions = array();
+        $conditions['recycle'] = ESC_NORMAL;
+        if($this->input->get('project_id')){
+            $conditions['project_id'] = $this->input->get('project_id');
+        }
+        if($this->input->get('total_load')){
+            $conditions['total_load'] = $this->input->get('total_load');
+        }
+        if($this->input->get('building')){
+            $conditions['building'] = $this->input->get('building');
+        }
+        if($this->input->get('station_type')){
+            $conditions['station_type'] = $this->input->get('station_type');
+        }
+        if($this->input->get('city_id')){
+            $conditions['city_id'] = $this->input->get('city_id');
+        }
+        if($this->input->get('force_on')){
+            $conditions['force_on'] = $this->input->get('force_on');
+        }
+        if($this->input->get('under_construct')){
+            $conditions['under_construct'] = $this->input->get('under_construct');
+        }
+        if($this->input->get('alive')){
+            $conditions['alive'] = $this->input->get('alive');
+        }
+        if($this->input->get('rom_id')){
+            $conditions['rom_id'] = $this->input->get('rom_id');
+        }
+        if($this->input->get('creator_id')){
+            $conditions['creator_id'] = $this->input->get('creator_id');
+        }
+
+        $orders = array("project_id asc","city_id asc","total_load asc","building asc");
+        $stations = $this->station->findBy_sql($conditions,$orders);
+        foreach($stations as $key => $station){
+            $stations[$key]['city_name_chn'] = $this->area->getCityNameChn($station['city_id']);
+            $stations[$key]['project_name_chn'] = $this->project->getProjectNameChn($station['project_id']);
+            $stations[$key]['esg_id'] = $this->esg->getEsgId($station['id']);
+            $stations[$key]['rom_version'] = $this->rom->getRomVersion($station['rom_id']);
+        }
+        
+       
+        $titles = array("基站名"=>array("A","25"),"基站Id"=>array("B",""),"项目"=>array("C","20"),"城市"=>array("D",""),"负载"=>array("E",""),
+            "建筑"=>array("F",""),"基站类型"=>array("G","15"),"状态"=>array("H",""),"空调数量"=>array("I",""),"空调0类型"=>array("J",""),
+            "空调1类型"=>array("K",""),"新风类型"=>array("L",""),"风机风量"=>array("M",""),"恒温柜类型"=>array("N",""),"室外传感"=>array("O",""),
+            "维护建设"=>array("Q",""),"督导"=>array("R",""),"创建时间"=>array("S","20"),"ESG"=>array("T","15"),"SIM"=>array("U","15"),
+            "更新进度"=>array("P","35"),"人为干预"=>array("Q",""),"最后连接时间"=>array("R","20"),"经度"=>array("S",""),"纬度"=>array("T",""),
+            "地址"=>array("U","40"),"rom版本"=>array("V","20"));
+       
+        $this->load->library('excel');
+        $this->excel->setActiveSheetIndex(0);
+        $this->excel->getActiveSheet()->setTitle("基站列表");
+     
+        $col = 'A';  $row = 1;  //A1
+        foreach($titles as $key=>$title){
+            $this->excel->getActiveSheet()->setCellValue($title[0].$row,$key);
+            $this->excel->getActiveSheet()->getColumnDimension($title[0])->setWidth($title[1]?$title[1]:12);
+            $this->excel->getActiveSheet()->getStyle($title[0].$row)->getFont()->setBold(true);
+        }
+ 
+        foreach($stations as $station){
+            $row++;            
+            $items = array("基站名"=>$station['name_chn'],
+                           "基站Id"=>$station['id'],
+                           "项目"=>$station['project_id'],
+                           "城市"=>$station['city_name_chn'],
+                           "负载"=>h_station_total_load_name_chn($station['total_load']),
+
+                           "建筑"=>h_station_building_name_chn($station['building']),
+                           "基站类型"=>h_station_station_type_name_chn($station['station_type']),
+                           "状态"=>h_alive_name_chn($station['alive']),
+                           "空调数量"=>$station['colds_num'],
+                           "空调0类型"=>"",
+
+                           "空调1类型"=>"",
+                           "新风类型"=>"",
+                           "风机风量"=>h_station_air_volume_name_chn($station['air_volume']),
+                           "恒温柜类型"=>h_station_box_type_name_chn($station['box_type']),
+                           "室外传感"=>$station['equip_with_outdoor_sensor']==ESC_BEING?"有":"无",
+
+                           "维护建设"=>h_station_under_construct_name_chn($station['under_construct']),
+                           "督导"=>"",
+                           "创建时间"=>$station['create_time'],
+                           "ESG"=>$station['esg_id'],
+                           "更新进度"=>"",
+
+                           "SIM"=>$station['sim_num'],
+                           "人为干预"=>h_station_force_on_name_chn($station['force_on']),
+                           "最后连接时间"=>$station['last_connect_time'],
+                           "经度"=>$station['lng'],
+                           "纬度"=>$station['lat'],
+
+                           "地址"=>$station['address_chn'],
+                           "rom版本"=>$station['rom_version']
+                          );
+            foreach($titles as $key=>$title){
+                $this->excel->getActiveSheet()->setCellValue($title[0].$row,$items[$key]);
+            }
+            
+        }
+       
+        $this->excel->export_excel("station");
+    }
+
+
+
+        //$query = $this->db->query("
+            //SELECT sum(monthdatas.main_energy)/count(*) average,project_id,city_id,building_type,total_load 
+            //FROM `sav_stds` left join monthdatas on `sav_stds`.std_station_id = monthdatas.station_id
+            //AND `sav_stds`.datetime = monthdatas.datetime
+            //WHERE `sav_stds`.datetime=? and monthdatas.main_energy>0 group by project_id,city_id,building_type,total_load
+        //",array(h_dt_start_time_of_month($datetime)));
+        //$sav_stds = $query->result_array();
+        
+        //foreach($sav_stds as $sav_std){
+            //$this->sav_std_average->setAverageMainEnergy(
+                //$sav_std['project_id'], 
+                //$sav_std['city_id'],
+                //$sav_std['total_load'], 
+                //$sav_std['building_type'], 
+                //$datetime,
+                //$sav_std['average']);
+        //}

@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<title>Power - 节能云 前端</title>
+
+<meta name="robots" content="no-cache" />
+<meta name="description" content="Energy Saving" />
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/static/bootstrap/patch/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/static/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+  </head>
+
+
+        <link type="text/css" href="/static/jquery/smoothness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/static/jquery/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/static/jquery/jquery-ui-1.8.18.custom.min.js"></script>
+		<script type="text/javascript" src="/static/jquery/ex/jquery-ui-timepicker-addon.js"></script>
+        
+
+
+ <body>
+
+<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">节能云</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/frontend/realtime"> 实时监控 </a> </li>
+              <li><a href="/frontend/power"> 能耗分析 </a> </li>
+              <li><a href="/frontend/alarm"> 报警 </a> </li>
+              <li><a href="/frontend/report"> 报表 </a> </li>
+              <li><a href="/frontend/map"> 地图 </a> </li>
+              <li><a href="/frontend/station"> 基站管理 </a> </li>
+            </ul>
+            <p class="navbar-text pull-right">Logged in as <a href="#">张小明</a></p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+<div class="container-fluid">
+    <div class="row-fluid"> <!--chart row 1--> 
+    	<div class="span9"> 
+	            <div class="chart" id="es_power"></div>
+        
+	            <div class="chart" id="es_power_column"></div>
+        </div>
+    </div><!--chart row 1-->
+</div><!--contaner-->
+
+		<script type="text/javascript" src="js/frontend_chart_basic.js?id=6"></script>	
+		<script type="text/javascript">
+		// Json struct for different params. Initial: current_time, last 3_hours
+			window.global_options = {
+				"station_id": "1",
+				"dur": "3_hours",
+				"type": "last",
+				"time": ""
+            }
+			window.display_options = {
+				"station_id": 0,
+				"dur": "",
+				"type": "",
+                "es_date_picker": "",
+                "es_time_picker": ""
+            }
+            
+
+            $(document).ready(function(){
+
+                init_highcharts();
+
+                draw_chart("es_power");
+                draw_chart("es_power_column");
+                
+                get_data_and_refresh_chart("es_power");
+                get_data_and_refresh_chart("es_power_column");
+                  
+                setInterval(function(){
+                    if(window.global_options.type === "last"){ 
+                        get_data_and_refresh_chart("es_power");
+                        get_data_and_refresh_chart("es_power_column");
+                    }
+                },1000*10);
+
+
+			});
+
+		</script>
+        
+<script src="highcharts/highcharts.js"></script>
+<!-- <script type="text/javascript" src="grid_mod.js"></script> -->
+<!-- <script src="highcharts/modules/exporting.src.js"></script> -->
+
+
+<div class="container-fluid">
+<div class="row footer">
+<div class="span12 footer">
+<hr>
+<footer>
+    <p><strong> &copy; 2012 Designed by Xiang </strong> <br> Page rendered in <strong>0.0113</strong> seconds</p>
+</footer>
+</div><!--span12 footer-->
+</div><!--row footer-->
+</div><!--contaner-->
+</body>
+
+
+
+
+	<script type="text/javascript" src="/static/site/js/public.js?id=6"></script>
+
+    <script type="text/javascript" src="/static/bootstrap/js/google-code-prettify/prettify.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-alert.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-tab.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-popover.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-button.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-carousel.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script type="text/javascript" src="/static/bootstrap/js/application.js"></script>
+
+</html>

@@ -1,0 +1,182 @@
+<style type="text/css">
+	table{font-size:12px;}
+	th,td{width:50px;}
+	.station_name{width:20%;}
+	
+	/* Subnav */
+.subnav {
+  width: 100%; height: 30px; margin:0 0 14px 0; padding:0;
+  background-color: #999; /* Old browsers */
+  border-bottom: 1px solid #e5e5e5;
+  -webkit-border-radius: 4px 4px 4px 4px;
+     -moz-border-radius: 4px 4px 4px 4px;
+          border-radius: 4px 4px 4px 4px;
+}
+.subnav .nav {
+  margin-bottom: 0;
+}
+.subnav .nav > li > a {
+  margin: 0;
+  color: #fff;
+  padding-top:    8px;
+  padding-bottom: 8px;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+.subnav .nav > li> a:hover {
+  color: #000;
+}
+.subnav .nav > .active > a,
+.subnav .nav > .active > a:hover {
+  padding-left: 13px;
+  color: #000;
+  font-weight:bold;
+  background-color: #eee;
+  border-right-color: #ddd;
+  border-left: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.05);
+     -moz-box-shadow: inset 0 3px 5px rgba(0,0,0,.05);
+          box-shadow: inset 0 3px 5px rgba(0,0,0,.05);
+}
+.subnav .nav > .active > a .caret,
+.subnav .nav > .active > a:hover .caret {
+  border-top-color: #777;
+}
+
+
+.subnav .nav > li > a >font {
+    font-size:12px;
+}
+.subnav .dropdown-menu {
+  -webkit-border-radius: 0 0 4px 4px;
+     -moz-border-radius: 0 0 4px 4px;
+          border-radius: 0 0 4px 4px;
+}
+
+.subnav .nav .divider-vertical{
+  width:0px;
+  height:30px;
+  border-right: 1px solid #a5a5a5;
+  border-left: 1px solid #959595;
+}
+	
+</style>
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		
+<div class="subnav">
+    <div class="container-fluid">
+        <ul class="nav nav-pills">    
+          <li class=<?= $statistic_style=='d'?"active":""?>>
+          	<a href="javascript:void(0)" val="d" id="es_sel_day">日排序</a></li>    
+          <li class=<?= $statistic_style=='m'?"active":""?>>
+          	<a href="javascript:void(0)" val="m" id="es_sel_month">月排序</a></li>    
+		  <li class="divider-vertical" style="margin:0 2px 0 10px;"></li>
+		  <li class="divider-vertical" style="margin:0 10px 0 2px;"></li>
+		  
+          <li class=<?= $statistic_duration=='0'?"active":""?>>
+          	<a href="javascript:void(0)" val="0" id="es_offset_0"><?= h_statistics_duration($statistic_style,0);?></a></li>
+        
+          <li class=<?= $statistic_duration=='1'?"active":""?>>
+          	<a href="javascript:void(0)" val="1" id="es_offset_1"><?= h_statistics_duration($statistic_style,1);?></a></li>          
+          
+
+          <li style="padding-top:3px;" id="es_datetime"><input type="text"  style="width:68px;height:16px;margin-left:2px;"> &nbsp; </li>
+
+        </ul>
+    </div>
+</div>  
+	
+<!-- sort by -->
+	<div>
+		<table class="table table-striped">
+			<tr id="con_sel">
+				<th class="station_name">基站名称</th>
+				<th><a class="btn btn-mini <?= h_sort_page_con_status($sort_con['ac_sav']);?>" val="ac_sav" order=<?= h_sort_page_con_order($sort_con['ac_sav']);?>>AC节能量(kw.h)</a></th>
+				<th><a class="btn btn-mini <?= h_sort_page_con_status($sort_con['ac_sav_rate']);?>" val="ac_sav_rate" order=<?= h_sort_page_con_order($sort_con['ac_sav_rate']);?>>AC节能率</a></th>					
+				<th><a class="btn btn-mini <?= h_sort_page_con_status($sort_con['ac_main_rate']);?>" val="ac_main_rate" order=<?= h_sort_page_con_order($sort_con['ac_main_rate']);?>>AC能耗百分比</a></th>	
+				<th>总能耗(kw.h)</th>
+				<th>AC能耗(kw.h)</th>
+				<th>DC能耗(kw.h)</th>
+			</tr>
+		</table>
+		<table class="table table-striped table-condensed">
+			<?php foreach($stations as $key=>$station){?>
+			<tr>
+				<td class="station_name"><?= $sort_datas['station_name'][$key]?></td>
+				<td><?= $sort_datas['ac_sav'][$key]?></td>
+				<td><?= $sort_datas['ac_sav_rate'][$key]?></td>
+				<td><?= $sort_datas['ac_main_rate'][$key]?></td>
+				<td><?= $sort_datas['energy_main'][$key]?></td>
+				<td><?= $sort_datas['energy_ac'][$key]?></td>
+				<td><?= $sort_datas['energy_dc'][$key]?></td>
+			</tr>
+			<?php }?>	
+		</table>
+	</div>
+
+<!-- end -->
+
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+window.opts = {
+	"style": "<?= $statistic_style?>",
+	"duration": "<?= $statistic_duration?>"	
+}
+var baseURL  = "/station/station_sort"+"<?= h_list_page_get_str($current_con,"","");?>";
+
+$(document).ready(function(){
+	//con sel
+		$('#con_sel th a').each(function(){
+			$(this).click(function(){
+			top.location.href = baseURL+"&style="+window.opts.style+"&duration="+window.opts.duration+"&"+$(this).attr("val")+"="+$(this).attr("order");;
+			});
+		});
+	
+	//time sel
+		$('#es_sel_day').click(function(){
+			window.opts.style = $(this).attr("val");
+			top.location.href = baseURL+"&style="+window.opts.style+"&duration=0";
+		});
+		$('#es_sel_month').click(function(){
+			window.opts.style = $(this).attr("val");
+			top.location.href = baseURL+"&style="+window.opts.style+"&duration=0";
+		});
+
+        $('#es_offset_0').click(function(){
+            window.opts.duration = $(this).attr("val");
+            top.location.href = baseURL+"&style="+window.opts.style+"&duration="+window.opts.duration;
+        });    
+        
+        $('#es_offset_1').click(function(){
+            window.opts.duration = $(this).attr("val");
+            top.location.href = baseURL+"&style="+window.opts.style+"&duration="+window.opts.duration;  
+        });            
+        
+        $('#es_datetime input').datepicker({
+            showButtonPanel: true,
+            dateFormat: (window.opts.style=='d')?"yy-mm-dd":"yy-mm",
+            //timeFormat: "hh:mm:ss",
+            inline: false,
+            timezone: '+8000',
+            defaultDate: '+7d', 
+            //onSelect: function(datetimeText, instance){
+            //}
+            onClose:function(datatimeText,instance){
+      			$("#es_offset_0").parent("li").attr("class","");
+                $("#es_offset_1").parent("li").attr("class","");
+            	window.opts.duration = $(this).attr("value").replace(/-/g,"");
+           		top.location.href = baseURL+"&style="+window.opts.style+"&duration="+window.opts.duration;               
+            }
+         });
+         
+         $('#es_datetime input').attr("value","<?= h_statistic_datepicker($statistic_style,$statistic_duration);?>");
+         
+});
+</script>

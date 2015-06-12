@@ -1,0 +1,168 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+require_once("main_helper.php");
+
+function h_statistics_switch_on_time($time){
+    return h_dt_readable_time($time*60,false);
+}
+
+function h_statistics_style($style){
+	$_styles = array('d'=>'日统计','m'=>'月统计');
+	foreach ($_styles as $key => $_style) {
+		if($style==$key){
+			$style = $_style;
+		}
+	}
+	return $style;
+}
+
+function h_statistics_duration($style,$select){
+	switch($style){
+		case 'd':
+			if(!$select){return '今天';}else{return '昨天';}
+			break;
+		case 'm':
+			if(!$select){return '本月';}else{return '上月';}
+			break;
+	}
+}
+
+
+function h_statistics_ac_sav_rate($ac_sav,$ac_std){
+	if($ac_std>0){
+		return round(($ac_std-$ac_sav)*100/$ac_std,2)."%";
+	}else{
+		return null;
+	}
+}
+
+function h_statistics_ac_main_rate($main,$ac){
+	if($main>0){
+		return round($ac*100/$main,2)."%";
+	}else{
+		return null;
+	}
+}
+
+function h_statistics_average($a,$b,$count,$duration){
+	if($duration=='0'){
+		if($a&&$b){
+			return round((floatval($a)-floatval($b))/$count,2);
+		}
+	}else{
+		if($a){
+			return round(floatval($a)/$count,2);
+		}
+	}				
+}
+
+function h_statistics_diff($a,$b){
+	if($a&&$b){
+		return round($a-$b,2);
+	}else{
+		return null;
+	}
+}
+
+function h_statistic_datepicker($style,$duration){
+	$datepicker = new DateTime();
+	$dur_split = array();
+	$dur_str = array();
+	switch($style){		
+		case 'd':
+			if($duration=='0'){return $datepicker->format('Y-m-d');}
+			elseif($duration=='1'){return $datepicker->sub(new DateInterval("P1D"))->format('Y-m-d');}
+			else{
+				$dur_split = str_split($duration,4);
+				$dur_str = $dur_split;
+				if(strlen($duration)==8){
+					$dur_split = str_split($dur_split[1],2);
+					$dur_str[1] = $dur_split[0];
+					$dur_str[2] = $dur_split[1];	
+				}
+				return implode("-", $dur_str);
+			}
+			break;
+		case 'm':
+			if($duration=='0'){return $datepicker->format('Y-m');}
+			elseif($duration=='1'){return $datepicker->sub(new DateInterval("P1M"))->format('Y-m');}
+			else{
+				$dur_split = str_split($duration,4);
+				$dur_str = $dur_split;
+				if(strlen($duration)==8){
+					$dur_split = str_split($dur_split[1],2);
+					$dur_str[1] = $dur_split[0];
+					$dur_str[2] = $dur_split[1];	
+				}
+				return implode("-", $dur_str);				
+			}
+			break;
+	}	
+}
+
+//function h_statistic_std_column($std_datas){
+	//if($std_datas){
+		//$std_columns = array();
+		//foreach ($std_datas as $key => $std_data) {
+			//$std_columns[$key] = array();
+			//array_push($std_columns[$key],$std_data['statistics']->getMainEnergy(),
+			//$std_data['statistics']->getAcEnergy(),$std_data['statistics']->getDcEnergy());
+		//}
+		//return $std_columns;
+	//}else{
+		//return null;
+	//}
+
+//}
+
+function h_statistic_std_total($std_total){
+	if($std_total){
+		return array($std_total->getMainEnergy(),$std_total->getAcEnergy(),$std_total->getDcEnergy());	
+	}else{
+		return null;
+	}
+	
+}
+
+function h_statistic_std_current($std_current){
+	if($std_current){
+		return array($std_current->getMainEnergy(),$std_current->getAcEnergy(),$std_current->getDcEnergy());
+	}else{
+		return null;
+	}
+}
+
+function h_statistic_loops($style,$time_str,$count){
+	if($style=="d"){
+		if(h_dt_is_time_this_day($time_str)){
+			if($count>1){$count-=1;}
+		}
+	}
+	if($style=="m"){
+		if(h_dt_is_time_this_month($time_str)){
+			if($count>1){$count-=1;}
+		}
+	}	
+	return $count;
+}
+
+function h_statistics_type_array(){
+$array[ESC_STATISTICS_TYPE__HOUR] = "按小时";
+$array[ESC_STATISTICS_TYPE__DAY] = "按天";
+$array[ESC_STATISTICS_TYPE__MONTH] = "按月";
+$array[ESC_STATISTICS_TYPE__MONTH6P1] = "按6+1";
+$array[ESC_STATISTICS_TYPE__MONTHNP1] = "按N+1";
+return $array;
+}
+
+function h_statistics_type_name_chn($type){
+   return  name_or_no_name(h_statistics_type_array(),$type);
+}
+
+function h_statistics_type_select($default=0,$first="全部",$width=100){
+    return h_make_select(h_statistics_type_array(),'type',$default,$first,$width);
+}
+
+function h_statistics_relative_select($name,$objects,$current=0,$first="全部",$width=200){
+    return h_make_select(h_objects_array($objects),$name,$current,$first,$width);
+} 

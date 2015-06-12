@@ -1,0 +1,245 @@
+map <F4> Vy:<c-r>"<cr>
+$VIM/vimrc [gf]
+
+errorColdsOutCtrl
+
+!ctags -R 
+args **/*.php
+argdo %s/getCities_sql/findProjectCities/egc | update
+
+
+vimgrep /findAllNoOutdoorStations/ **/*.php
+
+
+vimgrep /iconv/ **/*.php
+vimgrep /jquery-1.10.2/ **/*.php
+vimgrep /semos/ **/*.php
+
+
+vimgrep /bootstrap/ **/*.php
+
+vimgrep /h_alive_select/ **/*.php
+vimgrep /h_station_total_load_select/ **/*.php
+
+
+vimgrep /getTableName/ **/*.php
+vimgrep /changeTable(/ **/*.php
+vimgrep /tableName(/ **/*.php
+
+vimgrep /$this->load->database/ **/*.php
+
+
+vimgrep /没数据/ **/*.php
+vimgrep /no_data/ **/*.php
+
+vimgrep /->autocheck(/ **/*.php
+vimgrep /station_log/ **/*.php
+
+vimgrep /pagination_stop_cache/ **/*.php
+
+
+
+vimgrep /$this->load->library('session');/ **/*.php
+$this->load->library('session');
+
+
+vimgrep /user_sess/ **/*.php
+
+
+vimgrep /aging_footer/ **/*.php
+vimgrep /analysis_footer/ **/*.php
+
+
+vimgrep /getProductProjects/ **/*.php
+
+vimgrep /area->findAll_sql/ **/*.php
+vimgrep /getCities_sql/ **/*.php
+vimgrep /getDistricts_sql/ **/*.php
+
+
+args **/*.php
+argdo %s/getCities_sql/findProjectCities/egc | update
+
+
+vimgrep /fan_type/ **/*.php
+
+!ctags -R 
+vimgrep /todo/ **/*.php
+vimgrep /ccm/ **/*.php
+vimgrep /blank/ **/*.php
+
+vimgrep /findDayDatas(/ **/*.php
+vimgrep /generateDayDataList/ **/*.php
+vimgrep /createDataTable/ **/*.php
+vimgrep /checkDataTables/ **/*.php
+vimgrep /turntoarray/ **/*.php
+vimgrep /turntoidarray/ **/*.php
+
+
+
+vimgrep /h_autocheck_report_trans/ **/*.php
+vimgrep /h_available_slope/ **/*.php
+
+vimgrep /whereAllStations/ **/*.php
+
+vimgrep /no new rom/ **/*.php
+
+vimgrep /$this->db->where/ **/*.php
+
+vimgrep /box_type/ **/*.php
+vimgrep /have_box/ **/*.php
+
+vimgrep /\Cupdate(/ **/*.php
+
+vimgrep /getLastData_sql/ **/*.php
+vimgrep /generateDataNums/ **/*.php
+vimgrep /generateEnergies/ **/*.php
+vimgrep /generateDayDataList_energy/ **/*.php
+
+
+
+vimgrep /findAllStations(/ **/*.php
+
+vimgrep /getThisMonthAverageMainEnergy/ **/*.php
+vimgrep /getLastDayAverageMainEnergy/ **/*.php
+vimgrep /findLastDayEnergy/ **/*.php
+vimgrep /findStationDaydata/ **/*.php
+
+
+
+vimgrep /updateBy/ **/*.php
+
+vimgrep /ESC_COMMAND_STATUS__READ/ **/*.php
+vimgrep /ESC_COMMAND_STATUS__FAIL/ **/*.php
+
+vimgrep /h_dt_data_day/ **/*.php
+
+vimgrep /change_table_name/ **/*.php
+vimgrep /turntoarray/ **/*.php
+
+vimgrep /getAllNoOutdoorStationIds/ **/*.php
+vimgrep /getAllNoBoxStationIds/ **/*.php
+vimgrep /getAllOneColdsStationIds/ **/*.php
+vimgrep /getAllForceOnStationIds/ **/*.php
+vimgrep /getAllStandardStationIds/ **/*.php
+
+vimgrep /contract_energy_saving_rate_v0/ **/*.php
+vimgrep /findSavingDaydata_sql/ **/*.php
+
+
+vimgrep /openBugsByStation/ **/*.php
+vimgrep /CloseBug_sql/ **/*.php
+vimgrep /ClearOtherBugs/ **/*.php
+vimgrep /hasCloseWarning/ **/*.php
+vimgrep /getCloseWarnings/ **/*.php
+vimgrep /newOpenBug_sql/ **/*.php
+
+vimgrep /putStationsOffline/ **/*.php
+
+vimgrep /findlast(/ **/*.php
+
+args **/*.php
+argdo %s/h_dt_now_time(/h_dt_now(/egc | update
+
+
+vimgrep /energy_main_flag/ **/*.php
+vimgrep /update_fix_data/ **/*.php
+
+
+vimgrep /h_dt_readable_hour/ **/*.php
+vimgrep /h_dt_readable_day/ **/*.php
+
+
+vimgrep /h_dt_now_time(/ **/*.php
+vimgrep /change_table/ **/*.php
+
+vimgrep /newUrCommand/ **/*.php
+
+vimgrep /CloseBugs_sql/ **/*.php
+
+vimgrep /h_dt_interval_month/ **/*.php
+
+vimgrep /findAllStations_sql_order_project_city/ **/*.php
+vimgrep /countAllStations/ **/*.php
+
+vimgrep /day_type/ **/*.php
+vimgrep /findSavingDaydata_sql/ **/*.php
+
+vimgrep /abnormalData/ **/*.php
+
+
+vimgrep /h_station_rom_select/ **/*.php
+vimgrep /contract_energy_saving_rate_v0/ **/*.php
+
+vimgrep /h_esgconf_disable/ **/*.php
+
+vimgrep /h_esgconf_name_inside/ **/*.php
+
+vimgrep /$this->area->findBy_sql/ **/*.php
+vimgrep /普通站/ **/*.php
+
+
+vimgrep /h_esgconf/ **/*.php
+
+
+vimgrep /closeBugs(/ **/*.php
+
+
+
+vimgrep /newUrCommand/ **/*.php
+
+find_stationid_sql
+vimgrep /new_sql/ **/*.php
+vimgrep /recordRestart/ **/*.php
+
+
+
+
+vimgrep /h_bug_type_name_chn_short/ **/*.php
+
+
+vimgrep /h_bug_type_array/ **/*.php
+
+
+
+vimgrep /h_dt_month_array/ **/*.php
+
+vimgrep /calcAndSaveSinglePairSaveRate/ **/*.php
+
+vimgrep /getCommonTable(/ **/*.php
+vimgrep /calcFinalTableCache(/ **/*.php
+vimgrep /getSavingTable(/ **/*.php
+vimgrep /getSavTableCacheHash(/ **/*.php
+
+vimgrep /workorder/ **/*.php
+vimgrep /savtablecache/ **/*.php
+
+
+
+vimgrep /findSavingDaydata_sql/ **/*.php
+vimgrep /pagination_num/ **/*.php
+vimgrep /h_userlog_relative_select/ **/*.php
+vimgrep /h_authority_name_chn/ **/*.php
+
+vimgrep /getCities_sql/ **/*.php
+vimgrep /h_main_flash_notice/ **/*.php
+vimgrep /station_status/ **/*.php
+vimgrep /station_state/ **/*.php
+
+vimgrep /warning_num/ **/*.php
+vimgrep /station_state/ **/*.php
+
+vimgrep /ESC_STATION_WARNING_NONE/ **/*.php
+
+vimgrep /h_station_warning_select_array/ **/*.php
+vimgrep /h_station_warning_select/ **/*.php
+ 
+vimgrep /UNDER_CONSTRUCT/ **/*.php
+vimgrep /ESC_COMMAND_STATUS__OPEN/ **/*.php
+vimgrep /checkCommandOpen/ **/*.php
+
+vimgrep /finishCommandById/ **/*.php
+vimgrep /h_online_gif(/ **/*.php
+
+vimgrep /ESC_COMMAND_STATUS__CLOSED/ **/*.php
+

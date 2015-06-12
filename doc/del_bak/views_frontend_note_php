@@ -1,0 +1,165 @@
+<style type="text/css">
+.note_table{margin-top:5px;padding:0 0.5%;}
+.note_table a{cursor:pointer;}
+.note_table caption{text-align:left;margin-bottom:5px;}
+.submit_edit{display:none;}
+.note_table textarea{width:96%;height:60px;}
+.note_table p{padding-top:20px;}
+.feedback{width:66%;}
+#filter{float:right;height:0px;}
+</style>
+
+<div style="clear:both;height:1px;overflow:hidden"></div>
+<div class="base_center">
+        <form id="filter" method="get" action="">
+            <input type="text" name="search" style="width:120px" value="<?= $this->input->get('search')?>" title="基站、笔者、笔记内容等搜寻"/> 	
+            <button type="submit" class="btn btn-mini btn-inverse"><i class="icon-search icon-white"></i> 搜索</button> 
+            <a href="/frontend/note" class="btn btn-mini ">还原</a>
+        </form>
+
+<div class="row-fluid">
+<div class="span12 note_table">   
+	<? if ($this->session->flashdata('flash_succ')){?>
+	<div class="alert alert-success feedback"> <?= $this->session->flashdata('flash_succ')?> </div>	
+	<? }?>
+	
+	<!-- 个人私有笔记	 -->
+	<? if(count($private_notes)){ ?>
+	<div><table class="table table-condensed table-striped">
+	<caption><span class="label label-info"><? if(count($private_notes)){ echo "个人私有笔记"; } ?></span></caption>
+	<thead><tr>
+		<th style="width:8%;">笔者</th>
+                <th style="width:34%;">笔记内容</th>
+                <th style="width:16%;">基站名称</th>
+                <th style="width:10%;">基站在线日期</th>
+                <th style="width:14%;">记录时间</th>
+                <th style="width:8%;"><i class="icon-pencil"></i></th>
+                <th style="width:10%;"><i class="icon-cog"></i> 权限变更</th>
+	<tr></thead>
+	<tbody>
+	<?php foreach($private_notes as $note){ ?>
+		<tr><td><?= $note->getAuthor()->getNameChn() ?></td>
+			<td><a href="/frontend/single/day/<?= $note->getStation()->getId()?>?time=<?= $note->getCreateTime()->format('Y-m-d')?>" style="color:#333;">
+				<?= $note->getContent() ?></a></td>
+			<td><?= $st=$note->getStation()->getNameChn()?></td>
+			<td><?= $ct=$note->getCreateTime()->format('Y-m-d') ?></td>
+			<td><?= $nt=$note->getNoteTime()->format('Y-m-d H:i:s')?></td>
+			<td><a class="note_edit">修改</a>&nbsp;&nbsp;
+				<a onclick="confirm_jumping(' 删除 <?= $st?> \n <?= $ct?>笔记 [<?= $nt?>] ','/frontend/note/note_del/<?= $note->getId()?>?backurl=<?= $backurlstr?>')">删除</a></td>
+			<td><a onclick="confirm_jumping(' 公开 <?= $st?> \n <?= $ct?>笔记 [<?= $nt?>] ','/frontend/note/note_openness/<?= $note->getId()?>/<?= ESC_NOTE_PUBLIC?>?backurl=<?= $backurlstr?>')">对所有人公开</a></td>			
+		</tr>
+		<tr></tr>
+		<tr class="submit_edit"><td></td>
+			<?php $hidden = array('note_id'=>$note->getId(),'backurl'=>$backurlstr);
+			echo form_open("/frontend/note/note_edit",'',$hidden); ?>
+			<td colspan="4"><textarea name="note_content"><?= $note->getContent() ?></textarea></td>
+			<td colspan="2"><p><?php echo form_submit("","保存"); ?>&nbsp;&nbsp;<input type="button" value="取消" class="note_cancel" /></p></td>
+			<? echo form_close(); ?>
+		</tr>		
+	<? }?>
+	</tbody>
+	</table></div>	
+	<? }?><!-- 个人私有笔记	 -->
+
+	<!-- 个人公开笔记	 -->
+	<? if(count($self_public_notes)){ ?>
+	<div><table class="table table-condensed table-striped">
+	<caption><span class="label label-info"><? if(count($self_public_notes)){ echo "个人公开笔记"; } ?></span></caption>
+	<thead><tr>
+		<th style="width:8%;">笔者</th>
+                <th style="width:34%;">笔记内容</th>
+                <th style="width:16%;">基站名称</th>
+                <th style="width:10%;">基站在线日期</th>
+                <th style="width:14%;">记录时间</th>
+                <th style="width:8%;"><i class="icon-pencil"></i></th>
+                <th style="width:10%;"><i class="icon-cog"></i> 权限变更</th>
+	<tr></thead>
+	<tbody>
+	<?php foreach($self_public_notes as $note){ ?>
+		<tr><td><?= $note->getAuthor()->getNameChn() ?></td>
+			<td><a href="/frontend/single/day/<?= $note->getStation()->getId()?>?time=<?= $note->getCreateTime()->format('Y-m-d')?>" style="color:#333;">
+				<?= $note->getContent() ?></a></td>
+			<td><?= $st=$note->getStation()->getNameChn()?></td>
+			<td><?= $ct=$note->getCreateTime()->format('Y-m-d') ?></td>
+			<td><?= $nt=$note->getNoteTime()->format('Y-m-d H:i:s')?></td>
+			<td><a class="note_edit">修改</a>&nbsp;&nbsp;
+				<a onclick="confirm_jumping(' 删除 <?= $st?> \n <?= $ct?>笔记 [<?= $nt?>] ','/frontend/note/note_del/<?= $note->getId()?>?backurl=<?= $backurlstr?>')">删除</a></td>
+			<td><a onclick="confirm_jumping(' 不公开 <?= $st?> \n <?= $ct?>笔记 [<?= $nt?>] ','/frontend/note/note_openness/<?= $note->getId()?>/<?= ESC_NOTE_PRIVATE?>?backurl=<?= $backurlstr?>')">仅自己可见</a></td>			
+		</tr>
+		<tr></tr>
+		<tr class="submit_edit"><td></td>
+			<?php $hidden = array('note_id'=>$note->getId(),'backurl'=>$backurlstr);
+			echo form_open("/frontend/note/note_edit",'',$hidden); ?>
+			<td colspan="4"><textarea name="note_content"><?= $note->getContent() ?></textarea></td>
+			<td colspan="2"><p><?php echo form_submit("","保存"); ?>&nbsp;&nbsp;<input type="button" value="取消" class="note_cancel" /></p></td>
+			<? echo form_close(); ?>
+		</tr>		
+	<? }?>
+	</tbody>
+	</table></div>	
+	<? }?><!-- 个人公开笔记	 -->
+
+	<!-- 其他人公开笔记	 -->
+	<? if(count($all_public_notes)>count($self_public_notes)){ ?>
+	<div><table class="table table-condensed table-striped">
+	<caption><span class="label"><? if(count($all_public_notes)>count($self_public_notes)){ echo "其他人公开笔记"; } ?></span></caption>
+	<thead><tr>
+		<th style="width:8%;">笔者</th>
+                <th style="width:34%;">笔记内容</th>
+                <th style="width:16%;">基站名称</th>
+                <th style="width:10%;">基站在线日期</th>
+                <th style="width:14%;">记录时间</th>
+                <th style="width:8%;"></th>
+                <th style="width:10%;"></th>                
+	<tr></thead>
+	<tbody>
+	<?php foreach($all_public_notes as $note){ 
+                if($note->getAuthor() != $user){ ?>
+		<tr><td><?= $note->getAuthor()->getNameChn() ?></td>
+			<td><a href="/frontend/single/day/<?= $note->getStation()->getId()?>?time=<?= $note->getCreateTime()->format('Y-m-d')?>" style="color:#333;">
+				<?= $note->getContent() ?></a></td>
+			<td><?= $st=$note->getStation()->getNameChn()?></td>
+			<td><?= $ct=$note->getCreateTime()->format('Y-m-d') ?></td>
+			<td><?= $nt=$note->getNoteTime()->format('Y-m-d H:i:s')?></td>
+                        <td></td>
+                        <td></td>
+		</tr>
+		<tr></tr>
+		<tr class="submit_edit"></tr>		
+	<? }}?>
+	</tbody>
+	</table></div>
+	<? }?><!-- 其他人公开笔记	 -->
+	
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(".note_cancel").click(function(){
+                    if(-[1,]){
+                        if(!document.all){ //firefox chrome... [table-row->none]
+                            $(this).parent().parent().parent().hide();
+                        }else{ //ie9 [table-row->none] form as a parent for ie7/8
+                            $(this).parent().parent().parent().parent().hide();
+                        }
+                    }else{ //ie 7/8 [block->none] form as a parent for ie7/8
+                        $(this).parent().parent().parent().parent().css("display","none");
+                    }
+		});
+		
+		$(".note_edit").click(function(){
+			$(".feedback").hide();	
+                        if(-[1,]){ // ie9 firefox chrome ... [table-row->none]
+                            $(this).parent().parent().next().next().toggle();
+                        }else{ // ie7/8  [none->block,block->none]
+                            if($(this).parent().parent().next().next().css("display")=="none"){
+                                $(this).parent().parent().next().next().css("display","block");
+                            }else{
+                                $(this).parent().parent().next().next().css("display","none");
+                            }
+                        }
+		});	
+	});        
+</script>

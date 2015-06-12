@@ -1,0 +1,121 @@
+<style type="text/css">
+.project{margin:16px 0 0 0;}
+</style>
+    
+    <div class="row-fluid">  
+        <div class="span12"> 
+
+<div class="es_stations_choose" style="background-color:#ccc">
+<div class="subnav">
+    <div class="container-fluid">
+        <ul class="nav nav-pills">
+          <li id="es_refresh"><a href="javascript:void(0)" ><i class="icon-refresh"></i>&nbsp;刷新数据</a></li>
+          <li class="divider-vertical"></li>
+
+          <li id="es_month_offset_0"><a href="?time="> 本月 </a></li>
+          <li class="divider-vertical"></li>
+          <li id="es_month_offset_1"><a href="?time=<?= h_dt_time_str_last_month()?>"> 上月 </a></li>
+          <li class="divider-vertical"></li>
+
+
+          <li style="padding-top:3px;" id="es_day">  <input type="text"  style="width:52px;height:16px"> &nbsp; </li>
+
+          <li class="divider-vertical"></li>
+        </ul>
+    </div>
+</div>
+</div>
+            <div class="row-fluid">  
+                <div class="span9">
+                	<div id="es_project_statistic"></div>
+                	<div id="es_load_building"></div>
+                </div>    
+               
+                <div class="span3">
+					<table class="table table-condensed project">
+					<thead>
+						<tr>
+							<th>基站类型</th>	
+							<th>月节能量</th>
+							<th>节能站</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach($infos as $key=>$info){?>
+						<tr style=<?= (0===$key)?"background-color:#eee;":"" ?>>
+							<td><?= $info['type']?></td>						
+							<td><?= $info['ac_value']?></td>
+							<td><?= $info['save_num']?>个</td>
+						</tr>
+						<?php }?>
+					</tbody>
+					</table>
+                </div>
+             
+            </div>
+        </div>
+    </div>
+</div>
+
+<?
+/********************************
+Fast JJump 
+../../../../static/site/js/frontend_mstatistic.js
+
+********************************/
+?>
+
+		<script type="text/javascript" src="/static/site/js/frontend_basic.js?id=<?= hsid()?>"></script>
+		<script type="text/javascript" src="/static/site/js/frontend_mstatistic.js?id=<?= hsid()?>"></script>
+		<script type="text/javascript">
+		var render = new Array("es_20_30A_zhuan","es_20_30A_ban","es_30_40A_zhuan","es_30_40A_ban","es_40_50A_zhuan","es_40_50A_ban",
+							   "es_50_60A_zhuan","es_50_60A_ban","es_60_70A_zhuan","es_60_70A_ban","es_70A_plus_zhuan","es_70A_plus_ban");
+		var title= new Array("20-30A 砖墙","20-30A 彩钢板","30-40A 砖墙","30-40A 彩钢板","40-50A 砖墙","40-50A 彩钢板",
+							  "50-60A 砖墙","50-60A 彩钢板","60-70A 砖墙","60-70A 彩钢板","70A+ 砖墙","70A+ 彩钢板");
+
+		// Json struct for different params. Initial: time, last 3_hours
+			window.global_options = {
+                "time": "<?= $time_input?>"
+            }
+
+            $(document).ready(function(){
+
+                $("#es_refresh").click(function(){ window.location.reload();});
+
+                $('#es_day input').datepicker({
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm",
+                    inline: false,
+                    timezone: '+8000',
+                    defaultDate: '+7d', 
+                    onClose:function(datatimeText,instance){
+                        $("#es_month_offset_0").attr("class","");
+                        $("#es_month_offset_1").attr("class","");
+                        window.global_options.time = $('#es_day input').attr("value") + ' 00:00:00';
+                        window.location.href="?time="+window.global_options.time;
+                    }
+                });
+                $('#es_day input').attr("value",window.global_options.time);
+                
+                init_highcharts();
+     
+                
+                draw_project_statistic();
+                draw_load_building();
+                // draw_city();
+                
+                if(<?= count($es_project_statistic)?>){ window.es_project_statistic.series[0].setData(<?= $es_project_statistic?>); }     
+                if(<?= count($es_building_zhuan)&&count($es_building_ban) ?>){
+                	window.es_load_building.series[0].setData(<?= $es_building_zhuan?>);
+                	window.es_load_building.series[1].setData(<?= $es_building_ban?>);
+                }               
+			});
+
+		</script>
+        
+<script src="/static/hicharts/highcharts.js"></script>
+<script src="/static/hicharts/modules/exporting.js"></script>
+
+
+
+

@@ -1,0 +1,186 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+class Report_controller extends Frontend_Controller {
+
+    function __construct() {
+        parent::__construct();
+        $this->load->helper('station');
+        $this->load->model(array('warning', 'station','area'));
+    }
+    
+
+    public function index() {
+        $viewdata['title'] = "分析报表";
+        
+        $this->load->view('templates/frontend_header', $viewdata);
+        $this->load->view('templates/frontend_footer'); 
+    }
+    
+    public function month($cur_page = 1){
+        $this->dt['title'] = "月报表统计";
+        $time_str = $this->input->get('time_str') ? $this->input->get('time_str') : h_dt_date_str_no_day("");
+        $this->dt['time_str'] = $time_str;
+        
+
+        $per_page = $this->input->get('per_page')? $this->input->get('per_page'):15;	
+        $conditions = array();
+        $conditions['recycle ='] = ESC_NORMAL;
+        $conditions['project_id ='] = $this->current_project['id'];
+        $conditions['city_id ='] = $this->current_city['id'];
+        $conditions['total_load ='] = $this->input->get('total_load');
+        $conditions['building ='] = $this->input->get('building');
+        $conditions['station_type ='] = $this->input->get('station_type');
+        $conditions['alive ='] = $this->input->get('alive');
+
+        $orders = array("total_load"=>"asc","building"=>"asc","station_type"=>"asc","id"=>"desc");
+        $paginator =  $this->station->pagination($conditions,$orders,$per_page,$cur_page);
+        $config['base_url'] = '/frontend/report/month/';
+        $config['suffix'] = "?".$_SERVER['QUERY_STRING'];
+        $config['first_url'] = $config['base_url'].$config['suffix'];
+        $config['total_rows'] = count($paginator);
+        $config['per_page'] = $per_page; 
+        $this->pagination->initialize($config); 
+        $this->dt['pagination'] = $this->pagination->create_links();
+        $this->dt['stations'] = $paginator;
+
+        $time = new DateTime($time_str);
+        $time_str_3 = $time_str;
+        $time->sub(new DateInterval('P1M'));
+        $time_str_2 = $time->format('Ymd');
+        $time->sub(new DateInterval('P1M'));
+        $time_str_1 = $time->format('Ymd');
+
+        $month_three = array();
+        $month_two= array();
+        $month_one= array();
+        foreach($paginator as $station){
+            if(ESC_STATION_TYPE_NPLUSONE == $station->getStationType()){
+                array_push($month_three,$this->statistics->findMonthNP1SavingPercentage($station,$time_str_3));
+                array_push($month_two,$this->statistics->findMonthNP1SavingPercentage($station,$time_str_2));
+                array_push($month_one,$this->statistics->findMonthNP1SavingPercentage($station,$time_str_1));
+            }else if(ESC_STATION_TYPE_COMMON == $station->getStationType() || ESC_STATION_TYPE_SAVING == $station->getStationType()){
+                $std_station = $this->station->find_single_standard_station($station);
+                array_push($month_three,$this->statistics->findMonthSavingPercentage($station,$std_station,$time_str_3));
+                array_push($month_two,$this->statistics->findMonthSavingPercentage($station,$std_station,$time_str_2));
+                array_push($month_one,$this->statistics->findMonthSavingPercentage($station,$std_station,$time_str_1));
+            }else if(ESC_STATION_TYPE_STANDARD == $station->getStationType()){
+                $s1 = $this->statistics->findBy(array('station'=>$station,"time"=>new DateTime($time_str_3),"type"=>ESC_STATISTICS_TYPE__MONTH));
+                $s2 = $this->statistics->findBy(array('station'=>$station,"time"=>new DateTime($time_str_2),"type"=>ESC_STATISTICS_TYPE__MONTH));
+                $s3 = $this->statistics->findBy(array('station'=>$station,"time"=>new DateTime($time_str_1),"type"=>ESC_STATISTICS_TYPE__MONTH));
+                array_push($month_three,array("saving"=>"基准站","self"=>"","std"=>"基准站","saving_p"=>"","self_p"=>""));
+                array_push($month_two,array("saving"=>"基准站","self"=>"","std"=>"基准站","saving_p"=>"","self_p"=>""));
+                array_push($month_one,array("saving"=>"基准站","self"=>"","std"=>"基准站","saving_p"=>"","self_p"=>""));
+            }
+        }
+        $this->dt['month_three']= $month_three;
+        $this->dt['month_two']= $month_two;
+        $this->dt['month_one']= $month_one;
+            
+        $this->load->view('templates/frontend_header', $this->dt);
+        $this->load->view('frontend/report/menu');
+        $this->load->view('frontend/report/month');
+        $this->load->view('templates/frontend_footer');      
+    }
+    
+    public function month_details(){
+        $viewdata['title'] = "月报表明细";
+        $time_str = $this->input->get('time_str') ? $this->input->get('time_str') : h_dt_date_str_no_day("");
+        $viewdata['time_str'] = $time_str;
+        $viewdata['all'] = $this->input->get('all');
+        
+        $this->benchmark->mark('a');
+        $s_array = array();
+        if($this->input->get('total_load') && $this->input->get('building') || $this->input->get('all')){
+            $conditions['total_load='] = $this->input->get('total_load');
+            $conditions['building='] = $this->input->get('building');
+            $conditions['city_id='] = 48; //百色
+            $conditions['recycle='] = ESC_STATION_STATE__NORMAL; 
+            $orders = array("total_load"=>"asc","building"=>"asc","ns"=>"desc");
+            $s_array = $this->station->findStationsSql($conditions,$orders,"id,name_chn,ns,ns_start,total_load,building");             
+        }
+        $viewdata['stations'] = $s_array;
+        
+        $result = ($s_array)?$this->statistics->findMonthNP1SavingStatisticsListSql($s_array,$time_str):array();
+        $viewdata['statistics'] = $result?$result["list"]:array();
+        $viewdata['day_total'] = $result?$result["day_total"]:array();
+
+        $this->benchmark->mark('b');
+
+        
+        $this->load->view('templates/frontend_header', $viewdata);
+        $this->load->view('frontend/report/menu');
+        $this->load->view('frontend/report/month_details');
+        $this->load->view('templates/frontend_footer');    
+    }
+    
+    //////////////////////////////////////////////////////////////////////////////////
+    public function index2($cur_page=1) {
+        $viewdata['title'] = "Report Center";
+        $viewdata['city_id'] = $this->current_project['id'];
+        $cities = $this->project->getCities_sql($this->current_project['id']);
+        $viewdata['cities'] = $cities;
+        
+        $per_page = $this->input->get('per_page')? $this->input->get('per_page'):15;
+        $conditions = array();
+        $orders = array();
+        $conditions['recycle ='] = ESC_NORMAL;
+        $conditions['project_id = '] = $this->current_project['id'];
+        $conditions['city_id = '] = $this->input->get('city_id');
+        $conditions['total_load ='] = $this->input->get('total_load');
+        $conditions['building ='] = $this->input->get('building');
+        if(1){
+            $orders = array('total_load'=>'asc','building'=>'asc','station_type'=>'asc');
+        }
+        
+        $paginator =  $this->station->pagination($conditions,$orders,$per_page,$cur_page);
+        
+        $config['base_url'] = '/frontend/report/index';
+        $config['suffix'] = "?".$_SERVER['QUERY_STRING'];
+        $config['first_url'] = $config['base_url'].$config['suffix'];
+        $config['total_rows'] = count($paginator);
+        $config['per_page'] = $per_page; 
+        $this->pagination->initialize($config); 
+        $viewdata['pagination'] = $this->pagination->create_links();
+        $viewdata['filter_num_str'] = h_filter_num_str($config['total_rows'],$cur_page,$per_page);
+        $stations = $paginator;
+        $viewdata['stations'] = $stations;
+        $viewdata['count'] = $per_page;
+        
+        $time_str = $this->input->get('time_str') ? $this->input->get('time_str') : h_dt_date_str_no_day("");
+        $viewdata['time_str'] = $time_str;
+        
+        $viewdata['group_by'] = array();
+        $day_total = array();
+        for($i=0;$i<date('t',h_dt_date_str_timestamp($time_str));$i++){
+            $day_total[$i] = 0;
+        }
+        foreach($stations as $_station){
+            if (ESC_STATION_TYPE_SAVING == $_station->getStationType() || ESC_STATION_TYPE_COMMON == $_station->getStationType()) {
+                //todo:  要找匹配的
+                $std_station = $this->station->find_single_standard_station($_station);
+                $slist = $this->statistics->findMonthSavingStatisticsList($_station, $std_station, h_dt_date_str($time_str . "-01 00:00:00"));
+                $viewdata['slist'][$_station->getId()] = $slist;
+                $stotal = $this->statistics->findMonthSavingStatistic($_station, $std_station, h_dt_date_str($time_str . "-01 00:00:00"));
+                $viewdata['stotal'][$_station->getId()] = $stotal;
+                foreach($slist as $key=>$item){ $day_total[$key] += $item['energy_save']; }
+            } else if (ESC_STATION_TYPE_STANDARD == $_station->getStationType()) {
+//                $slist = $this->statistics->findMonthStatisticslist($_station, h_date_str($time_str . "-01 00:00:00"));
+//                $viewdata['slist'][$_station->getId()] = $slist;
+            } else if (ESC_STATION_TYPE_NPLUSONE == $_station->getStationType()) {
+                $slist = $this->statistics->findMonthNP1SavingStatisticsList($_station, h_dt_date_str($time_str . "-01 00:00:00"));
+                $viewdata['slist'][$_station->getId()] = $slist;
+                $stotal = $this->statistics->findMonthNP1SavingStatistic($_station, h_dt_date_str($time_str . "-01 00:00:00"));
+                $viewdata['stotal'][$_station->getId()] = $stotal;
+                foreach($slist as $key=>$item){ $day_total[$key] += $item['energy_save']; }
+            }
+            array_push($viewdata['group_by'],$_station->getTotalLoad().$_station->getBuilding());
+        }
+        $viewdata['dtotal'] = $day_total;
+        $viewdata['mtotal'] = array_sum($day_total);
+        
+        $this->load->view('templates/frontend_header', $viewdata);
+        $this->load->view('frontend/report',$viewdata);
+        $this->load->view('templates/frontend_footer');
+    }
+}
+

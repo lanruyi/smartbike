@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<catalog>
+	<page name="基础信息" id="1">
+		<item id="101" name="基站名称" type="text"></item>
+		<item id="102" name="巡检城市" type="text"></item>
+		<item id="103" name="基站类型" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="基准站"></option>
+			<option value="2" name="标杆站"></option>
+			<option value="3" name="节能站"></option>
+			<option value="4" name="N+1站"></option>
+		</item>
+		<item id="104" name="是否存在物业协调" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="存在"></option>
+			<option value="2" name="不存在"></option>
+		</item>
+		<item id="105" name="基站通行时间" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="工作日"></option>
+			<option value="2" name="无限制"></option>
+		</item>
+	</page>
+
+	<page name="设备检测" id="2">
+		<item id="201" name="新风状态" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="正常"></option>
+			<option value="2" name="异常"></option>
+		</item>
+		<item id="202" name="异常原因" type="checkbox">
+			<option value="1" name="风机损坏"></option>
+			<option value="2" name="风机过热"></option>
+			<option value="3" name="风机噪音"></option>
+			<option value="4" name="震动松动"></option>
+			<option value="5" name="电容烧坏"></option>
+			<option value="6" name="其它"></option>
+		</item>
+		<item id="203" name="空调一是否受控" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="受控"></option>
+			<option value="2" name="不受控"></option>
+		</item>
+		<item id="204" name="空调一制冷效果" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="很好"></option>
+			<option value="2" name="一般"></option>
+			<option value="3" name="不好"></option>
+		</item>
+		<item id="205" name="空调二是否受控" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="受控"></option>
+			<option value="2" name="不受控"></option>
+		</item>
+		<item id="206" name="空调二制冷效果" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="很好"></option>
+			<option value="2" name="一般"></option>
+			<option value="3" name="不好"></option>
+		</item>
+	</page>
+	<page name="硬件版本" id="3">
+		<item id="301" name="GPRS模块" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="DTU-100-AA1"></option>
+			<option value="2" name="DTU-100-AA2"></option>
+			<option value="3" name="DTU-STM-AA2"></option>
+			<option value="4" name="DUT-3G-AA1"></option>
+			<option value="5" name="DTUV1.1 130925"></option>
+			<option value="6" name="DTU V1.1 131022"></option>
+		</item>
+		<item id="302" name="RS485" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="CON-000-AA1"></option>
+			<option value="2" name="CON-485-AA2"></option>
+			<option value="3" name="V1.0 130925"></option>
+			<option value="4" name="V1.0 131022"></option>
+		</item>
+		<item id="303" name="新风控制板" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="XFC-ST8-AA2"></option>
+			<option value="2" name="XFC-ST8-AA4"></option>
+			<option value="3" name="V1.0 130925"></option>
+			<option value="4" name="V1.0 131022"></option>
+		</item>
+		<item id="304" name="电源模块" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="PWR-423-AA2"></option>
+			<option value="2" name="V1.0 130925"></option>
+			<option value="3" name="V1.0 131022"></option>
+			<option value="4" name="其他"></option>
+		</item>
+		<item id="305" name="博欧电表" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="MCSEM-CCS-AA1(闭环)"></option>
+			<option value="2" name="MCSEM-OCS-AA1(开环)"></option>
+		</item>
+		<item id="306" name="室内温感" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="STH-ST8-AA2"></option>
+			<option value="2" name="V1.0 130925"></option>
+		</item>
+		<item id="307" name="恒温柜温感" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="V1.0 130925"></option>
+		</item>
+		<item id="308" name="空调出风口温感" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="SAT-ST8-AA2"></option>
+			<option value="2" name="V1.0 130925"></option>
+		</item>
+		<item id="309" name="室外温感" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="SOT-ST8-AA1"></option>
+			<option value="2" name="V1.0 130925"></option>
+		</item>
+		<item id="310" name="排氢风扇" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="EHF-000-AA2"></option>
+		</item>
+		<item id="311" name="进风机" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="1700m³/hFIM-315-AA1"></option>
+			<option value="2" name="3000m³/hFIM-400-AA1"></option>
+			<option value="3" name="1700m³/hFIM-315-AB1"></option>
+			<option value="4" name="3000m³/hFIM-400-AB1"></option>
+		</item>
+		<item id="312" name="出风机" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="900m³/hFOM-200-AA1"></option>
+			<option value="2" name="1800m³/hFOM-250-AA1"></option>
+			<option value="3" name="750m³/hFOM-200-AB1"></option>
+			<option value="4" name="1450m³/hFOM-280-AB1"></option>
+		</item>
+	</page>
+
+	<page name="异常记录" id="4">
+		<item id="401" name="ESG是否被关闭" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="402" name="电压采集线是否被关闭" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="403" name="新风电源线是否被关闭" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="404" name="空调一电源线是否被剪断" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="405" name="空调二电源线是否被剪断" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="406" name="小空调运行状态" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="正常"></option>
+			<option value="2" name="被关闭"></option>
+			<option value="2" name="故障"></option>
+		</item>
+		<item id="407" name="小空调出风位置" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="正常"></option>
+			<option value="2" name="靠近传输设备"></option>
+		</item>
+		<item id="408" name="恒温柜状态" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="正常"></option>
+			<option value="2" name="异常"></option>
+		</item>
+	</page>
+	<page name="设备维修与更换" id="5">
+		<item id="527" name="小空调维修前图片" type="img"></item>
+		<item id="528" name="小空调故障现象" type="text"></item>
+		<item id="529" name="小空调故障真实原因" type="text"></item>
+		<item id="530" name="小空调维修后图片" type="img"></item>
+		<item id="501" name="ESG是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="502" name="ESG更换原因" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="ARM死机"></option>
+			<option value="2" name="通讯模块异常"></option>
+			<option value="3" name="新风控制板故障"></option>
+			<option value="4" name="485故障"></option>
+			<option value="5" name="电源模块故障"></option>
+			<option value="6" name="其它"></option>
+		</item>
+		<item id="503" name="GPRS模块是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="504" name="GPRS模块更换原因" type="text"></item>
+		<item id="505" name="RS485模块是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="506" name="RS485模块更换原因" type="text"></item>
+		<item id="507" name="新风控制板是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="508" name="新风控制板更换原因" type="text"></item>
+		<item id="509" name="电源模块是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="510" name="电源模块更换原因" type="text"></item>
+		<item id="511" name="智能电表是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="512" name="智能电表更换原因" type="text"></item>
+		<item id="513" name="室内温感是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="514" name="室内温感更换原因" type="text"></item>
+		<item id="515" name="恒温柜温感是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="516" name="恒温柜温感更换原因" type="text"></item>
+		<item id="517" name="空调出风口温感是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="518" name="空调出风口温感更换原因" type="text"></item>
+		<item id="519" name="室外温感是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="520" name="室外温感更换原因" type="text"></item>
+		<item id="521" name="排氢设备是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="522" name="排氢设备更换原因" type="text"></item>
+		<item id="523" name="进风机是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="524" name="进风机更换原因" type="text"></item>
+		<item id="525" name="出风机是否更换" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="是"></option>
+			<option value="2" name="否"></option>
+		</item>
+		<item id="526" name="出风机更换原因" type="text"></item>
+	</page>
+
+	<page name="电表信息" id="6">
+		<item id="601" name="电表位置" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="基站内部"></option>
+			<option value="2" name="基站墙外"></option>
+			<option value="3" name="未找到"></option>
+			<option value="4" name="其它位置"></option>
+		</item>
+		<item id="602" name="电表其它位置详情" type="text"></item>
+		<item id="603" name="采集时间" type="text"></item>
+		<item id="604" name="电表读数（KWH/度）" type="text"></item>
+	</page>
+
+	<page name="优化单元" id="7">
+		<item id="701" name="室内温感优化" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="无需优化"></option>
+			<option value="2" name="热源附近优化"></option>
+			<option value="3" name="风道优化"></option>
+		</item>
+		<item id="702" name="空调一优化" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="无需优化"></option>
+			<option value="2" name="出风风道优化"></option>
+			<option value="3" name="制冷效果优化"></option>
+			<option value="4" name="空调坏优化"></option>
+		</item>
+		<item id="703" name="空调二优化" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="无需优化"></option>
+			<option value="2" name="出风风道优化"></option>
+			<option value="3" name="制冷效果优化"></option>
+			<option value="4" name="空调坏优化"></option>
+		</item>
+		<item id="704" name="空调优化备注" type="text"></item>
+		<item id="705" name="进风机优化" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="无需优化"></option>
+			<option value="2" name="风道优化"></option>
+			<option value="3" name="风机坏"></option>
+			<option value="4" name="过滤优化"></option>
+		</item>
+		<item id="706" name="小空调优化" type="select">
+			<option value="0" name="请选择"></option>
+			<option value="1" name="无需优化"></option>
+			<option value="2" name="温度优化"></option>
+			<option value="3" name="小空调坏"></option>
+		</item>
+	</page>
+
+	<page name="巡检备注" id="8">
+		<item id="801" name="巡检备注1" type="text"></item>
+		<item id="802" name="巡检备注2" type="text"></item>
+		<item id="803" name="巡检备注3" type="text"></item>
+		<item id="804" name="巡检备注4" type="text"></item>
+		<item id="805" name="巡检备注5" type="text"></item>
+		<item id="806" name="巡检备注6" type="text"></item>
+	</page>
+
+	<page name="照片采集" id="9">
+		<item id="901" name="巡检记录本" type="img"></item>
+		<item id="902" name="进风窗" type="img"></item>
+		<item id="903" name="小空调" type="img"></item>
+		<item id="904" name="进风机" type="img"></item>
+		<item id="905" name="恒温柜" type="img"></item>
+		<item id="906" name="直流负载" type="img"></item>
+		<item id="907" name="ESG内部照" type="img"></item>
+		<item id="908" name="电表" type="img"></item>
+		<item id="909" name="交流配电柜内部" type="img"></item>
+		<item id="910" name="出风机外部环境" type="img"></item>
+		<item id="911" name="其它" type="img"></item>
+
+	</page>
+	
+
+</catalog>

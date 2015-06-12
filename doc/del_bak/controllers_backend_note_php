@@ -1,0 +1,45 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Note_controller extends Backend_Controller{
+
+    function __construct()
+    {
+        parent::__construct();
+        $this->load->model(array('note','station','user'));
+        $this->load->helper(array('note','station','user'));
+        $this->load->library('pagination');
+    }
+
+    public function index($cur_page = 1){
+        $data['title'] = "笔记列表";
+        $users = $this->user->findBy(array());
+        $data['users'] = $users;
+        
+        $per_page = $this->input->get('per_page')? $this->input->get('per_page'):20;	
+        $conditions = array();
+        $conditions[' station_id = '] = $this->input->get('station_id');
+        $conditions[' author_id = '] = $this->input->get('author_id');
+        $conditions[' openness = '] = $this->input->get('openness');
+        $conditions['create_time >='] = $this->input->get('create_start_time');
+        $conditions['create_time <='] = $this->input->get('create_stop_time');
+        if($this->input->get('content')){
+            $conditions['content like'] = '\'%'.$this->input->get('content').'%\'';
+        }
+        
+        $orders = array("id"=>"desc");
+        $paginator =  $this->note->pagination($conditions,$orders,$per_page,$cur_page);
+        $config['base_url'] = '/backend/note/index/';
+        $config['suffix'] = "?".$_SERVER['QUERY_STRING'];
+        $config['first_url'] = $config['base_url'].$config['suffix'];
+        $config['total_rows'] = count($paginator);
+        $config['per_page'] = $per_page; 
+        $this->pagination->initialize($config); 
+        $data['pagination'] = $this->pagination->create_links();
+        $data['notes'] = $paginator;
+        
+        $this->load->view('templates/backend_header', $data);
+        $this->load->view('backend/menu');
+        $this->load->view('backend/note/index');
+        $this->load->view('templates/backend_footer');
+    }
+}
